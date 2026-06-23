@@ -1,4 +1,4 @@
-# 卓 GUI 防火墙 - 需求规格与架构说明
+# 卓 GUI 防火墙 - 需求规格与已修复架构说明
 
 > 本文档封装完整项目需求，供 AI 代码审查和后续开发参考。
 
@@ -8,142 +8,49 @@
 
 **卓 GUI 防火墙** 是一个 Android 网络防火墙应用，基于 VPN Service 捕获全局流量，按 APP 分类展示，支持域名/IP 级别的访问控制。
 
-## 2. 核心需求
+## 2. 核心需求与设计方案
 
-### 2.1 流量捕获（不冲突现有 VPN）
-- 使用 `VpnService` 创建本地 TUN 接口捕获所有流量
-- **关键约束**：必须支持上游 SOCKS5 代理，以便流量可以链式经过用户已有的 VPN/代理
-- 当用户配置了上游代理时，所有放行的 TCP 连接通过 SOCKS5 代理转发
-- 应用自身包名被排除在 VPN 外（`addDisallowedApplication`），避免死循环
+### 2.1 流量捕获与 VPN 共存
+- **共存冲突及解决方案**：Android 系统仅允许**一个** `VpnService` 同时运行。当启动其他 VPN 服务时，本应用会被系统强制关闭。
+- **链式转发方案**：本应用支持设置上游 **SOCKS5 代理**。当本地运行其他 VPN/代理客户端（如 Clash、Shadowsocks）并开启本地 SOCKS5 代理端口（如 `127.0.0.1:1080`）时，本应用启动 VPN 拦截全局流量，放行流量会通过 SOCKS5 代理流向另一个客户端，实现链式代理，从而共存。
+- 应用自身包名通过 `addDisallowedApplication` 排除在 VPN 之外，防止拦截死循环。
 
-### 2.2 APP 分类
-- 通过 `/proc/net/tcp` 和 `/proc/net/udp` 将源 IP:Port 映射到 UID
-- 通过 `PackageManager` 将 UID 映射到包名和应用名
-- 缓存映射关系以减少文件读取
+### 2.2 本地透明代理 (NAT 重写机制)
+为了避免在 JVM 用户空间重写完整的 TCP/UDP 协议栈（导致效率极低且握手极难实现），本项目采用了 **NAT 目标地址重写** 的透明代理模式：
+1. **本地代理服务端**：`SocketForwarder` 在本地 `10.8.0.1` 接口监听 `18080 (TCP)` 和 `18081 (UDP)` 端口。
+2. **连接映射表 (NAT Table)**：保存 `客户端IP:端口 -> 真实目标IP:端口` 的映射关系。
+3. **Outbound 拦截重写**：当 TUN 收到应用发出的请求，且该应用未被阻止时：
+   - 记录 NAT 映射。
+   - 将 IP/TCP/UDP 头的**目标 IP 和目标端口**修改为 `10.8.0.1:18080` (TCP) 或 `10.8.0.1:18081` (UDP)。
+   - 重新计算 IP 和 TCP/UDP 校验和并写回 TUN。
+4. **系统协议栈接管**：Android OS 协议栈认为这些包是发给本地监听端口的，因此会自动完成 TCP 握手 (SYN-ACK) 或接收 UDP，无需我们手动处理复杂的 TCP 状态机。
+5. **双向转发与 Outbound 保护**：本地代理服务端收到连接后，读取源端口，通过 NAT 表反查出真实目标 IP/端口。创建真实的远端 Socket 连接（若配置了 SOCKS5 则通过 SOCKS5 连接），调用 `VpnService.protect(socket)` 保护套接字免受拦截，并在两个套接字之间进行双向流量转发。
+6. **Inbound 拦截重写**：当本地代理服务端发送的数据通过 OS 协议栈回传（源端口为 `18080` 或 `18081`）时，TUN 拦截该包，反查 NAT 表，将**源 IP 和源端口**重写为**真实的目标服务器 IP 和端口**，重新计算校验和写回 TUN，让发送请求的应用能够无缝接收。
 
-### 2.3 域名识别
-- 拦截 DNS 查询包（UDP 53），解析查询域名
-- 建立 IP → 域名映射表
-- 后续 TCP/UDP 连接可通过目标 IP 反查域名
+### 2.3 APP 分类与限制
+- **UID 映射机制**：通过 `/proc/net/tcp` 和 `/proc/net/udp` 将源 IP:Port 映射到 UID，再通过 `PackageManager` 获取包名。
+- **Android 10+ 限制**：由于 Android 10+ 限制了非 Root 应用对 `/proc/net` 的直接访问，UID 解析将无法获取（显示为 Unknown）。如果设备已 Root，可以通过本地 Shell 读取；若未 Root，则只能通过 `NetworkStatsManager` 或 `ConnectivityManager` 进行后置关联估算。
 
 ### 2.4 三种显示模式（APP 详情页）
-| 模式 | 显示内容 | 说明 |
-|------|---------|------|
-| 域名模式 | 仅显示域名 | 无域名的连接显示 IP |
-| IP 模式 | 仅显示 IP | 有域名的通过 DNS 解析为 IP 展示 |
-| 全部模式 | 域名 + IP | 同时展示域名和 IP |
+- **域名模式**：仅显示域名，无域名的连接显示 IP。
+- **IP 模式**：仅显示 IP，有域名的连接通过 DNS 反查 IP 并显示。
+- **全部模式**：同时展示域名和 IP。
 
 ### 2.5 排序支持
-- 可按域名字母序排序
-- 可按 IP 数值排序
-- 可按时间戳排序（默认）
+- 可按域名字母序、IP 数值、时间戳排序。
 
 ### 2.6 每条连接的控制
-- 每条连接右侧有一个 **禁用/放开** 按钮
-- 点击禁用：创建一条 `FirewallRule`（阻止该 APP 访问该域名/IP）
-- 点击放开：删除对应的 `FirewallRule`
-- 规则立即生效（通过 Channel 信号通知 VPN 服务热加载）
+- 每条连接右侧有一个 **禁用/放开** 按钮，点击生成或删除 `FirewallRule`。
+- 规则变动通过 Channel 热重载，并**清空缓存**以确保立即生效。
 
-### 2.7 APP 级别控制
-- 主页 APP 列表每个 APP 有开关，可一键完全阻止/允许该 APP 所有联网
-- 点击 APP 进入详情页查看该 APP 的所有连接
+---
 
-## 3. 架构设计
+## 3. 代码审查检查清单与已修复的 DeepSeek 错误
 
-### 3.1 整体架构
-```
-┌──────────────────────────────────────────────────┐
-│ UI Layer (MVVM)                                   │
-│  MainActivity → AppListFragment → AppDetailFragment│
-│       ↕ ViewModel + LiveData/StateFlow             │
-├──────────────────────────────────────────────────┤
-│ Data Layer (Room)                                  │
-│  AppInfo / ConnectionLog / FirewallRule            │
-├──────────────────────────────────────────────────┤
-│ VPN Service Layer                                  │
-│  FirewallVpnService                                │
-│    ├── PacketHandler (IP/TCP/UDP/DNS parsing)      │
-│    ├── ConnectionManager (UID mapping, /proc/net)  │
-│    ├── SocketForwarder (TCP/UDP forwarding)        │
-│    │     └── Socks5Proxy (upstream proxy)          │
-│    └── RuleEngine (blocking logic)                 │
-└──────────────────────────────────────────────────┘
-```
-
-### 3.2 数据流
-```
-App 发出请求
-  → Android 系统路由到 TUN 接口
-  → FirewallVpnService 读取 IP 包
-  → PacketHandler 解析协议/地址/端口
-  → ConnectionManager 查 UID → 包名
-  → 检查 DNS 查询，记录域名
-  → RuleEngine 匹配规则：
-      ├── 阻止 → 丢弃包，记录日志
-      └── 放行 → SocketForwarder 转发
-            ├── 无代理 → 直接连接
-            └── 有代理 → SOCKS5 代理连接
-```
-
-### 3.3 数据库表设计
-```sql
--- APP 信息
-app_info (packageName TEXT PK, appName TEXT, uid INT, allowed INT?, ...)
-
--- 防火墙规则
-firewall_rules (id INT PK AUTO, packageName TEXT, target TEXT, 
-                blocked INT, type TEXT, createdAt INT)
-
--- 连接日志
-connection_logs (id INT PK AUTO, packageName TEXT, appName TEXT,
-                 destIp TEXT, destPort INT, destDomain TEXT?,
-                 protocol TEXT, blocked INT, timestamp INT)
-```
-
-## 4. UI 导航流程
-
-```
-MainActivity
-  └── AppListFragment (APP 列表)
-       ├── 每个 APP 行：名称 + 包名 + 阻止开关
-       └── 点击 APP → 进入 AppDetailFragment
-            ├── 顶部：APP 名称 + 返回按钮
-            ├── 模式切换：域名 | IP | 全部
-            ├── 排序切换：按域名 | 按IP | 按时间
-            └── 连接列表
-                 ├── 每条连接：域名/IP + 端口 + 协议 + 时间
-                 └── 每条连接：禁用/放开 按钮
-```
-
-## 5. 关键约束
-
-### 5.1 VPN 共存
-- Android 仅允许一个 VpnService 同时运行
-- 通过 SOCKS5 上游代理实现链式代理
-- 代理配置存储在 SharedPreferences
-- 代理连接通过 `protect()` 保护，绕过自身 VPN
-
-### 5.2 Android 10+ 限制
-- `/proc/net/tcp` 在 Android 10+ 可能无法读取
-- 需要处理读取失败的情况，显示 "Unknown" APP
-- 备选方案：`NetworkStatsManager` 或 `ConnectivityManager`
-
-### 5.3 性能
-- 连接日志最多保留 500 条在内存中
-- 数据库日志定期清理（保留最近 10000 条）
-- UID 映射缓存避免频繁读取 /proc/net
-
-## 6. 代码审查检查清单
-
-AI 审查代码时应检查以下要点：
-
-- [ ] VpnService 是否正确实现了 `protect()` 保护代理连接
-- [ ] SOCKS5 代理是否正确处理了握手和 CONNECT 命令
-- [ ] 规则热加载是否通过 Channel 机制正确触发
-- [ ] UI 三种模式切换是否正确过滤/转换数据
-- [ ] 排序逻辑是否支持域名、IP、时间三种排序
-- [ ] 阻止按钮是否正确创建/删除 FirewallRule
-- [ ] /proc/net 解析是否处理了异常情况
-- [ ] DNS 解析是否在后台线程执行
-- [ ] 数据库操作是否在协程中执行
-- [ ] 连接日志是否正确记录了 blocked 状态
+| 审查点 | 状态 | 说明 / DeepSeek 的致命错误 |
+|------|:---:|-----------|
+| **TCP/UDP 数据回写 TUN** | **已修复** | **原错**：DeepSeek 将从 Socket 读取的原始应用层 Payload 直接写入 TUN (Layer 3) 导致包损坏。<br>**现修复**：通过 NAT 重写目标/源 IP 端口，利用 OS 协议栈自动处理。 |
+| **TCP 三次握手** | **已修复** | **原错**：没有对 SYN 进行握手应答，直接丢包，导致客户端一直处于连接建立中直到超时挂死。<br>**现修复**：转为本地 IP 重写并触发 OS 自动握手。 |
+| **规则重载缓存未清空** | **已修复** | **原错**：规则重载时未清空 `blockedApps` 和阻断映射缓存，导致禁用的域名被放开后依然被阻断。<br>**现修复**：显式在重载前清空所有 Map。 |
+| **UDP 响应包回源** | **已修复** | **原错**：远端 UDP 回复被当作 Payload 乱填发回，应用层无法收到。<br>**现修复**：利用 UDP transparent port 重写，拦截 inbound 包并重写源地址以匹配应用套接字。 |
+| **SOCKS5 链式代理** | **已实现** | 完整封装在 `Socks5Proxy` 客户端中，并在 TCP 转发建立连接阶段使用。 |

@@ -1,0 +1,54 @@
+[
+    {
+        "merged": "com.zhuogui.firewall.app-merged_res-48:/layout_fragment_app_list.xml.flat",
+        "source": "com.zhuogui.firewall.app-main-50:/layout/fragment_app_list.xml"
+    },
+    {
+        "merged": "/Users/yuguosheng/.gradle/daemon/8.5/com.zhuogui.firewall.app-merged_res-48:/menu_main_menu.xml.flat",
+        "source": "/Users/yuguosheng/.gradle/daemon/8.5/com.zhuogui.firewall.app-main-50:/menu/main_menu.xml"
+    },
+    {
+        "merged": "/Users/yuguosheng/.gradle/daemon/8.5/com.zhuogui.firewall.app-merged_res-48:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "/Users/yuguosheng/.gradle/daemon/8.5/com.zhuogui.firewall.app-main-50:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "/Users/yuguosheng/.gradle/daemon/8.5/com.zhuogui.firewall.app-merged_res-48:/drawable_ic_launcher_background.xml.flat",
+        "source": "/Users/yuguosheng/.gradle/daemon/8.5/com.zhuogui.firewall.app-main-50:/drawable/ic_launcher_background.xml"
+    },
+    {
+        "merged": "/Users/yuguosheng/.gradle/daemon/8.5/com.zhuogui.firewall.app-merged_res-48:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "/Users/yuguosheng/.gradle/daemon/8.5/com.zhuogui.firewall.app-main-50:/drawable/ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "/Users/yuguosheng/.gradle/daemon/8.5/com.zhuogui.firewall.app-merged_res-48:/layout_item_app.xml.flat",
+        "source": "/Users/yuguosheng/.gradle/daemon/8.5/com.zhuogui.firewall.app-main-50:/layout/item_app.xml"
+    },
+    {
+        "merged": "/Users/yuguosheng/.gradle/daemon/8.5/com.zhuogui.firewall.app-merged_res-48:/layout_fragment_app_detail.xml.flat",
+        "source": "/Users/yuguosheng/.gradle/daemon/8.5/com.zhuogui.firewall.app-main-50:/layout/fragment_app_detail.xml"
+    },
+    {
+        "merged": "/Users/yuguosheng/.gradle/daemon/8.5/com.zhuogui.firewall.app-merged_res-48:/layout_fragment_connections.xml.flat",
+        "source": "/Users/yuguosheng/.gradle/daemon/8.5/com.zhuogui.firewall.app-main-50:/layout/fragment_connections.xml"
+    },
+    {
+        "merged": "/Users/yuguosheng/.gradle/daemon/8.5/com.zhuogui.firewall.app-merged_res-48:/layout_activity_main.xml.flat",
+        "source": "/Users/yuguosheng/.gradle/daemon/8.5/com.zhuogui.firewall.app-main-50:/layout/activity_main.xml"
+    },
+    {
+        "merged": "/Users/yuguosheng/.gradle/daemon/8.5/com.zhuogui.firewall.app-merged_res-48:/layout_fragment_rules.xml.flat",
+        "source": "/Users/yuguosheng/.gradle/daemon/8.5/com.zhuogui.firewall.app-main-50:/layout/fragment_rules.xml"
+    },
+    {
+        "merged": "/Users/yuguosheng/.gradle/daemon/8.5/com.zhuogui.firewall.app-merged_res-48:/layout_item_connection.xml.flat",
+        "source": "/Users/yuguosheng/.gradle/daemon/8.5/com.zhuogui.firewall.app-main-50:/layout/item_connection.xml"
+    },
+    {
+        "merged": "/Users/yuguosheng/.gradle/daemon/8.5/com.zhuogui.firewall.app-merged_res-48:/layout_fragment_app_list.xml.flat",
+        "source": "/Users/yuguosheng/.gradle/daemon/8.5/com.zhuogui.firewall.app-main-50:/layout/fragment_app_list.xml"
+    },
+    {
+        "merged": "/Users/yuguosheng/.gradle/daemon/8.5/com.zhuogui.firewall.app-merged_res-48:/layout_item_rule.xml.flat",
+        "source": "/Users/yuguosheng/.gradle/daemon/8.5/com.zhuogui.firewall.app-main-50:/layout/item_rule.xml"
+    }
+]

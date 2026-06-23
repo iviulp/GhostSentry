@@ -1,0 +1,186 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.zhuogui.firewall"
+4    android:versionCode="1"
+5    android:versionName="1.0.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="26"
+9        android:targetSdkVersion="34" />
+10
+11    <uses-permission android:name="android.permission.INTERNET" />
+11-->/Volumes/fx900/myownproj/zhuogui/app/src/main/AndroidManifest.xml:4:5-67
+11-->/Volumes/fx900/myownproj/zhuogui/app/src/main/AndroidManifest.xml:4:22-64
+12    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+12-->/Volumes/fx900/myownproj/zhuogui/app/src/main/AndroidManifest.xml:5:5-79
+12-->/Volumes/fx900/myownproj/zhuogui/app/src/main/AndroidManifest.xml:5:22-76
+13    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
+13-->/Volumes/fx900/myownproj/zhuogui/app/src/main/AndroidManifest.xml:6:5-77
+13-->/Volumes/fx900/myownproj/zhuogui/app/src/main/AndroidManifest.xml:6:22-74
+14    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+14-->/Volumes/fx900/myownproj/zhuogui/app/src/main/AndroidManifest.xml:7:5-77
+14-->/Volumes/fx900/myownproj/zhuogui/app/src/main/AndroidManifest.xml:7:22-74
+15    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+15-->/Volumes/fx900/myownproj/zhuogui/app/src/main/AndroidManifest.xml:8:5-77
+15-->/Volumes/fx900/myownproj/zhuogui/app/src/main/AndroidManifest.xml:8:22-74
+16    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SYSTEM_EXEMPTED" />
+16-->/Volumes/fx900/myownproj/zhuogui/app/src/main/AndroidManifest.xml:9:5-93
+16-->/Volumes/fx900/myownproj/zhuogui/app/src/main/AndroidManifest.xml:9:22-90
+17
+18    <permission
+18-->[androidx.core:core:1.12.0] /Users/yuguosheng/.gradle/caches/transforms-3/0151249b72d6296e643df148676301af/transformed/core-1.12.0/AndroidManifest.xml:22:5-24:47
+19        android:name="com.zhuogui.firewall.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+19-->[androidx.core:core:1.12.0] /Users/yuguosheng/.gradle/caches/transforms-3/0151249b72d6296e643df148676301af/transformed/core-1.12.0/AndroidManifest.xml:23:9-81
+20        android:protectionLevel="signature" />
+20-->[androidx.core:core:1.12.0] /Users/yuguosheng/.gradle/caches/transforms-3/0151249b72d6296e643df148676301af/transformed/core-1.12.0/AndroidManifest.xml:24:9-44
+21
+22    <uses-permission android:name="com.zhuogui.firewall.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+22-->[androidx.core:core:1.12.0] /Users/yuguosheng/.gradle/caches/transforms-3/0151249b72d6296e643df148676301af/transformed/core-1.12.0/AndroidManifest.xml:26:5-97
+22-->[androidx.core:core:1.12.0] /Users/yuguosheng/.gradle/caches/transforms-3/0151249b72d6296e643df148676301af/transformed/core-1.12.0/AndroidManifest.xml:26:22-94
+23
+24    <application
+24-->/Volumes/fx900/myownproj/zhuogui/app/src/main/AndroidManifest.xml:11:5-39:19
+25        android:name="com.zhuogui.firewall.ZhuoguiApp"
+25-->/Volumes/fx900/myownproj/zhuogui/app/src/main/AndroidManifest.xml:12:9-35
+26        android:allowBackup="true"
+26-->/Volumes/fx900/myownproj/zhuogui/app/src/main/AndroidManifest.xml:13:9-35
+27        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+27-->[androidx.core:core:1.12.0] /Users/yuguosheng/.gradle/caches/transforms-3/0151249b72d6296e643df148676301af/transformed/core-1.12.0/AndroidManifest.xml:28:18-86
+28        android:debuggable="true"
+29        android:extractNativeLibs="false"
+30        android:icon="@mipmap/ic_launcher"
+30-->/Volumes/fx900/myownproj/zhuogui/app/src/main/AndroidManifest.xml:14:9-43
+31        android:label="@string/app_name"
+31-->/Volumes/fx900/myownproj/zhuogui/app/src/main/AndroidManifest.xml:15:9-41
+32        android:supportsRtl="true"
+32-->/Volumes/fx900/myownproj/zhuogui/app/src/main/AndroidManifest.xml:16:9-35
+33        android:theme="@style/Theme.Zhuogui" >
+33-->/Volumes/fx900/myownproj/zhuogui/app/src/main/AndroidManifest.xml:17:9-45
+34        <activity
+34-->/Volumes/fx900/myownproj/zhuogui/app/src/main/AndroidManifest.xml:19:9-27:20
+35            android:name="com.zhuogui.firewall.MainActivity"
+35-->/Volumes/fx900/myownproj/zhuogui/app/src/main/AndroidManifest.xml:20:13-41
+36            android:exported="true"
+36-->/Volumes/fx900/myownproj/zhuogui/app/src/main/AndroidManifest.xml:21:13-36
+37            android:launchMode="singleTop" >
+37-->/Volumes/fx900/myownproj/zhuogui/app/src/main/AndroidManifest.xml:22:13-43
+38            <intent-filter>
+38-->/Volumes/fx900/myownproj/zhuogui/app/src/main/AndroidManifest.xml:23:13-26:29
+39                <action android:name="android.intent.action.MAIN" />
+39-->/Volumes/fx900/myownproj/zhuogui/app/src/main/AndroidManifest.xml:24:17-69
+39-->/Volumes/fx900/myownproj/zhuogui/app/src/main/AndroidManifest.xml:24:25-66
+40
+41                <category android:name="android.intent.category.LAUNCHER" />
+41-->/Volumes/fx900/myownproj/zhuogui/app/src/main/AndroidManifest.xml:25:17-77
+41-->/Volumes/fx900/myownproj/zhuogui/app/src/main/AndroidManifest.xml:25:27-74
+42            </intent-filter>
+43        </activity>
+44
+45        <service
+45-->/Volumes/fx900/myownproj/zhuogui/app/src/main/AndroidManifest.xml:29:9-37:19
+46            android:name="com.zhuogui.firewall.service.FirewallVpnService"
+46-->/Volumes/fx900/myownproj/zhuogui/app/src/main/AndroidManifest.xml:30:13-55
+47            android:exported="false"
+47-->/Volumes/fx900/myownproj/zhuogui/app/src/main/AndroidManifest.xml:31:13-37
+48            android:foregroundServiceType="systemExempted"
+48-->/Volumes/fx900/myownproj/zhuogui/app/src/main/AndroidManifest.xml:32:13-59
+49            android:permission="android.permission.BIND_VPN_SERVICE" >
+49-->/Volumes/fx900/myownproj/zhuogui/app/src/main/AndroidManifest.xml:33:13-69
+50            <intent-filter>
+50-->/Volumes/fx900/myownproj/zhuogui/app/src/main/AndroidManifest.xml:34:13-36:29
+51                <action android:name="android.net.VpnService" />
+51-->/Volumes/fx900/myownproj/zhuogui/app/src/main/AndroidManifest.xml:35:17-65
+51-->/Volumes/fx900/myownproj/zhuogui/app/src/main/AndroidManifest.xml:35:25-62
+52            </intent-filter>
+53        </service>
+54
+55        <provider
+55-->[androidx.emoji2:emoji2:1.2.0] /Users/yuguosheng/.gradle/caches/transforms-3/b36bce413f5fc1546214ab62002cee26/transformed/emoji2-1.2.0/AndroidManifest.xml:24:9-32:20
+56            android:name="androidx.startup.InitializationProvider"
+56-->[androidx.emoji2:emoji2:1.2.0] /Users/yuguosheng/.gradle/caches/transforms-3/b36bce413f5fc1546214ab62002cee26/transformed/emoji2-1.2.0/AndroidManifest.xml:25:13-67
+57            android:authorities="com.zhuogui.firewall.androidx-startup"
+57-->[androidx.emoji2:emoji2:1.2.0] /Users/yuguosheng/.gradle/caches/transforms-3/b36bce413f5fc1546214ab62002cee26/transformed/emoji2-1.2.0/AndroidManifest.xml:26:13-68
+58            android:exported="false" >
+58-->[androidx.emoji2:emoji2:1.2.0] /Users/yuguosheng/.gradle/caches/transforms-3/b36bce413f5fc1546214ab62002cee26/transformed/emoji2-1.2.0/AndroidManifest.xml:27:13-37
+59            <meta-data
+59-->[androidx.emoji2:emoji2:1.2.0] /Users/yuguosheng/.gradle/caches/transforms-3/b36bce413f5fc1546214ab62002cee26/transformed/emoji2-1.2.0/AndroidManifest.xml:29:13-31:52
+60                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+60-->[androidx.emoji2:emoji2:1.2.0] /Users/yuguosheng/.gradle/caches/transforms-3/b36bce413f5fc1546214ab62002cee26/transformed/emoji2-1.2.0/AndroidManifest.xml:30:17-75
+61                android:value="androidx.startup" />
+61-->[androidx.emoji2:emoji2:1.2.0] /Users/yuguosheng/.gradle/caches/transforms-3/b36bce413f5fc1546214ab62002cee26/transformed/emoji2-1.2.0/AndroidManifest.xml:31:17-49
+62            <meta-data
+62-->[androidx.lifecycle:lifecycle-process:2.7.0] /Users/yuguosheng/.gradle/caches/transforms-3/14c473b5e0275c9fc5fe4ba7e78aeb7a/transformed/lifecycle-process-2.7.0/AndroidManifest.xml:29:13-31:52
+63                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+63-->[androidx.lifecycle:lifecycle-process:2.7.0] /Users/yuguosheng/.gradle/caches/transforms-3/14c473b5e0275c9fc5fe4ba7e78aeb7a/transformed/lifecycle-process-2.7.0/AndroidManifest.xml:30:17-78
+64                android:value="androidx.startup" />
+64-->[androidx.lifecycle:lifecycle-process:2.7.0] /Users/yuguosheng/.gradle/caches/transforms-3/14c473b5e0275c9fc5fe4ba7e78aeb7a/transformed/lifecycle-process-2.7.0/AndroidManifest.xml:31:17-49
+65            <meta-data
+65-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/yuguosheng/.gradle/caches/transforms-3/108b02be4a84b6d56d54450e4a0692d5/transformed/profileinstaller-1.3.0/AndroidManifest.xml:29:13-31:52
+66                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+66-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/yuguosheng/.gradle/caches/transforms-3/108b02be4a84b6d56d54450e4a0692d5/transformed/profileinstaller-1.3.0/AndroidManifest.xml:30:17-85
+67                android:value="androidx.startup" />
+67-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/yuguosheng/.gradle/caches/transforms-3/108b02be4a84b6d56d54450e4a0692d5/transformed/profileinstaller-1.3.0/AndroidManifest.xml:31:17-49
+68        </provider>
+69
+70        <uses-library
+70-->[androidx.window:window:1.0.0] /Users/yuguosheng/.gradle/caches/transforms-3/7efce1f1ba45b3d4aef4f390b0ccc032/transformed/window-1.0.0/AndroidManifest.xml:25:9-27:40
+71            android:name="androidx.window.extensions"
+71-->[androidx.window:window:1.0.0] /Users/yuguosheng/.gradle/caches/transforms-3/7efce1f1ba45b3d4aef4f390b0ccc032/transformed/window-1.0.0/AndroidManifest.xml:26:13-54
+72            android:required="false" />
+72-->[androidx.window:window:1.0.0] /Users/yuguosheng/.gradle/caches/transforms-3/7efce1f1ba45b3d4aef4f390b0ccc032/transformed/window-1.0.0/AndroidManifest.xml:27:13-37
+73        <uses-library
+73-->[androidx.window:window:1.0.0] /Users/yuguosheng/.gradle/caches/transforms-3/7efce1f1ba45b3d4aef4f390b0ccc032/transformed/window-1.0.0/AndroidManifest.xml:28:9-30:40
+74            android:name="androidx.window.sidecar"
+74-->[androidx.window:window:1.0.0] /Users/yuguosheng/.gradle/caches/transforms-3/7efce1f1ba45b3d4aef4f390b0ccc032/transformed/window-1.0.0/AndroidManifest.xml:29:13-51
+75            android:required="false" />
+75-->[androidx.window:window:1.0.0] /Users/yuguosheng/.gradle/caches/transforms-3/7efce1f1ba45b3d4aef4f390b0ccc032/transformed/window-1.0.0/AndroidManifest.xml:30:13-37
+76
+77        <service
+77-->[androidx.room:room-runtime:2.6.1] /Users/yuguosheng/.gradle/caches/transforms-3/2d13f5d160adb0d5f197dd5d93bdf45d/transformed/room-runtime-2.6.1/AndroidManifest.xml:24:9-28:63
+78            android:name="androidx.room.MultiInstanceInvalidationService"
+78-->[androidx.room:room-runtime:2.6.1] /Users/yuguosheng/.gradle/caches/transforms-3/2d13f5d160adb0d5f197dd5d93bdf45d/transformed/room-runtime-2.6.1/AndroidManifest.xml:25:13-74
+79            android:directBootAware="true"
+79-->[androidx.room:room-runtime:2.6.1] /Users/yuguosheng/.gradle/caches/transforms-3/2d13f5d160adb0d5f197dd5d93bdf45d/transformed/room-runtime-2.6.1/AndroidManifest.xml:26:13-43
+80            android:exported="false" />
+80-->[androidx.room:room-runtime:2.6.1] /Users/yuguosheng/.gradle/caches/transforms-3/2d13f5d160adb0d5f197dd5d93bdf45d/transformed/room-runtime-2.6.1/AndroidManifest.xml:27:13-37
+81
+82        <receiver
+82-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/yuguosheng/.gradle/caches/transforms-3/108b02be4a84b6d56d54450e4a0692d5/transformed/profileinstaller-1.3.0/AndroidManifest.xml:34:9-52:20
+83            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+83-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/yuguosheng/.gradle/caches/transforms-3/108b02be4a84b6d56d54450e4a0692d5/transformed/profileinstaller-1.3.0/AndroidManifest.xml:35:13-76
+84            android:directBootAware="false"
+84-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/yuguosheng/.gradle/caches/transforms-3/108b02be4a84b6d56d54450e4a0692d5/transformed/profileinstaller-1.3.0/AndroidManifest.xml:36:13-44
+85            android:enabled="true"
+85-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/yuguosheng/.gradle/caches/transforms-3/108b02be4a84b6d56d54450e4a0692d5/transformed/profileinstaller-1.3.0/AndroidManifest.xml:37:13-35
+86            android:exported="true"
+86-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/yuguosheng/.gradle/caches/transforms-3/108b02be4a84b6d56d54450e4a0692d5/transformed/profileinstaller-1.3.0/AndroidManifest.xml:38:13-36
+87            android:permission="android.permission.DUMP" >
+87-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/yuguosheng/.gradle/caches/transforms-3/108b02be4a84b6d56d54450e4a0692d5/transformed/profileinstaller-1.3.0/AndroidManifest.xml:39:13-57
+88            <intent-filter>
+88-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/yuguosheng/.gradle/caches/transforms-3/108b02be4a84b6d56d54450e4a0692d5/transformed/profileinstaller-1.3.0/AndroidManifest.xml:40:13-42:29
+89                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+89-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/yuguosheng/.gradle/caches/transforms-3/108b02be4a84b6d56d54450e4a0692d5/transformed/profileinstaller-1.3.0/AndroidManifest.xml:41:17-91
+89-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/yuguosheng/.gradle/caches/transforms-3/108b02be4a84b6d56d54450e4a0692d5/transformed/profileinstaller-1.3.0/AndroidManifest.xml:41:25-88
+90            </intent-filter>
+91            <intent-filter>
+91-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/yuguosheng/.gradle/caches/transforms-3/108b02be4a84b6d56d54450e4a0692d5/transformed/profileinstaller-1.3.0/AndroidManifest.xml:43:13-45:29
+92                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+92-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/yuguosheng/.gradle/caches/transforms-3/108b02be4a84b6d56d54450e4a0692d5/transformed/profileinstaller-1.3.0/AndroidManifest.xml:44:17-85
+92-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/yuguosheng/.gradle/caches/transforms-3/108b02be4a84b6d56d54450e4a0692d5/transformed/profileinstaller-1.3.0/AndroidManifest.xml:44:25-82
+93            </intent-filter>
+94            <intent-filter>
+94-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/yuguosheng/.gradle/caches/transforms-3/108b02be4a84b6d56d54450e4a0692d5/transformed/profileinstaller-1.3.0/AndroidManifest.xml:46:13-48:29
+95                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+95-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/yuguosheng/.gradle/caches/transforms-3/108b02be4a84b6d56d54450e4a0692d5/transformed/profileinstaller-1.3.0/AndroidManifest.xml:47:17-88
+95-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/yuguosheng/.gradle/caches/transforms-3/108b02be4a84b6d56d54450e4a0692d5/transformed/profileinstaller-1.3.0/AndroidManifest.xml:47:25-85
+96            </intent-filter>
+97            <intent-filter>
+97-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/yuguosheng/.gradle/caches/transforms-3/108b02be4a84b6d56d54450e4a0692d5/transformed/profileinstaller-1.3.0/AndroidManifest.xml:49:13-51:29
+98                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+98-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/yuguosheng/.gradle/caches/transforms-3/108b02be4a84b6d56d54450e4a0692d5/transformed/profileinstaller-1.3.0/AndroidManifest.xml:50:17-95
+98-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/yuguosheng/.gradle/caches/transforms-3/108b02be4a84b6d56d54450e4a0692d5/transformed/profileinstaller-1.3.0/AndroidManifest.xml:50:25-92
+99            </intent-filter>
+100        </receiver>
+101    </application>
+102
+103</manifest>

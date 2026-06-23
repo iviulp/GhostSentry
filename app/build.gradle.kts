@@ -16,8 +16,18 @@ android {
         versionName = "1.0.0"
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file("../zhuogui.jks")
+            storePassword = "zhuogui123"
+            keyAlias = "zhuogui"
+            keyPassword = "zhuogui123"
+        }
+    }
+
     buildTypes {
         release {
+            signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),

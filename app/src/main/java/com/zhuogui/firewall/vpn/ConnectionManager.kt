@@ -19,14 +19,45 @@ object ConnectionManager {
     private val ipToDomain = ConcurrentHashMap<String, String>()
 
     /**
-     * 根据源 IP 和端口查找 UID
+     * 根据源 IP 和端口查找 UID (Android 10+ 优先使用系统 API，旧版本降级使用 /proc)
      */
-    fun getUidForConnection(srcIp: String, srcPort: Int): Int {
+    fun getUidForConnection(
+        context: android.content.Context,
+        protocol: Int,
+        srcIp: String,
+        srcPort: Int,
+        dstIp: String,
+        dstPort: Int
+    ): Int {
         val key = "$srcIp:$srcPort"
         uidCache[key]?.let { return it }
 
-        // 从 /proc/net 读取
-        val uid = parseUidFromProc(srcIp, srcPort)
+        var uid = -1
+
+        // 1. Android Q (10) 及以上优先使用 ConnectivityManager.getConnectionOwnerUid
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+            try {
+                val cm = context.getSystemService(android.content.Context.CONNECTIVITY_SERVICE) as? android.net.ConnectivityManager
+                if (cm != null) {
+                    val local = java.net.InetSocketAddress(java.net.InetAddress.getByName(srcIp), srcPort)
+                    val remote = java.net.InetSocketAddress(java.net.InetAddress.getByName(dstIp), dstPort)
+                    val ipProto = if (protocol == PacketHandler.PROTO_TCP) {
+                        android.system.OsConstants.IPPROTO_TCP
+                    } else {
+                        android.system.OsConstants.IPPROTO_UDP
+                    }
+                    uid = cm.getConnectionOwnerUid(ipProto, local, remote)
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "getConnectionOwnerUid error: ${e.message}")
+            }
+        }
+
+        // 2. 降级使用读取 /proc/net 机制
+        if (uid < 0) {
+            uid = parseUidFromProc(srcIp, srcPort)
+        }
+
         if (uid >= 0) {
             uidCache[key] = uid
         }

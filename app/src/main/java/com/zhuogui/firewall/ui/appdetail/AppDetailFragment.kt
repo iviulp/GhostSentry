@@ -56,6 +56,7 @@ class AppDetailFragment : Fragment() {
     // 当前显示模式: "domain" | "ip" | "all"
     private var currentMode: String = "domain"
     private val _displayMode = MutableStateFlow("domain")
+    private val _deduplicate = MutableStateFlow(false)
 
     // 当前排序: "domain" | "ip" | "time"
     private var currentSort: String = "time"
@@ -100,13 +101,24 @@ class AppDetailFragment : Fragment() {
         // 设置排序切换
         setupSortChips()
 
-        // 观察连接数据，当模式或数据变化时更新
+        // 设置去重过滤
+        binding.chipDeduplicate.setOnCheckedChangeListener { _, isChecked ->
+            _deduplicate.value = isChecked
+        }
+
+        // 观察连接数据，当模式或数据或去重状态变化时更新
         viewLifecycleOwner.lifecycleScope.launch {
             combine(
                 viewModel.getConnectionsForPackage(packageName),
-                _displayMode
-            ) { logs, mode ->
-                applySort(logs) to mode
+                _displayMode,
+                _deduplicate
+            ) { logs, mode, dedup ->
+                val processed = if (dedup) {
+                    logs.distinctBy { it.destDomain ?: it.destIp }
+                } else {
+                    logs
+                }
+                applySort(processed) to mode
             }.collectLatest { (sorted, mode) ->
                 adapter.setDisplayMode(mode)
                 adapter.submitList(sorted)
@@ -156,12 +168,12 @@ class AppDetailFragment : Fragment() {
     private fun applySort(logs: List<ConnectionLog>): List<ConnectionLog> {
         return when (currentSort) {
             "domain" -> logs.sortedWith(
-                compareBy<String?> { it.destDomain ?: it.destIp }
+                compareBy<ConnectionLog> { it.destDomain ?: it.destIp }
                     .thenByDescending { it.timestamp }
             )
 
             "ip" -> logs.sortedWith(
-                compareBy<String> { ipToSortKey(it.destIp) }
+                compareBy<ConnectionLog> { ipToSortKey(it.destIp) }
                     .thenByDescending { it.timestamp }
             )
 

@@ -42,11 +42,13 @@ object Socks5Proxy {
         config: ProxyConfig,
         dstHost: String,
         dstPort: Int,
-        timeout: Int = 10000
+        timeout: Int = 10000,
+        protect: ((Socket) -> Boolean)? = null
     ): Socket? {
         try {
             // 1. 连接到代理服务器
             val socket = Socket()
+            protect?.invoke(socket)
             socket.connect(InetSocketAddress(config.host, config.port), timeout)
             socket.soTimeout = timeout
 
@@ -120,7 +122,7 @@ object Socks5Proxy {
                 // IPv4 地址
                 val ipParts = host.split(".").map { it.toInt() and 0xFF }
                 byteArrayOf(
-                    0x05, CMD_CONNECT, 0x00, ATYP_IPV4,
+                    0x05.toByte(), CMD_CONNECT.toByte(), 0x00.toByte(), ATYP_IPV4.toByte(),
                     ipParts[0].toByte(), ipParts[1].toByte(),
                     ipParts[2].toByte(), ipParts[3].toByte(),
                     (port shr 8).toByte(), (port and 0xFF).toByte()
@@ -129,10 +131,10 @@ object Socks5Proxy {
                 // 域名
                 val domainBytes = host.toByteArray(Charsets.UTF_8)
                 val requestBytes = ByteArray(7 + domainBytes.size)
-                requestBytes[0] = 0x05
-                requestBytes[1] = CMD_CONNECT
-                requestBytes[2] = 0x00
-                requestBytes[3] = ATYP_DOMAIN
+                requestBytes[0] = 0x05.toByte()
+                requestBytes[1] = CMD_CONNECT.toByte()
+                requestBytes[2] = 0x00.toByte()
+                requestBytes[3] = ATYP_DOMAIN.toByte()
                 requestBytes[4] = domainBytes.size.toByte()
                 System.arraycopy(domainBytes, 0, requestBytes, 5, domainBytes.size)
                 requestBytes[5 + domainBytes.size] = (port shr 8).toByte()

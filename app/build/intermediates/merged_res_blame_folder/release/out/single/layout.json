@@ -1,0 +1,38 @@
+[
+    {
+        "merged": "/Users/yuguosheng/.gradle/daemon/8.5/com.zhuogui.firewall.app-mergeReleaseResources-47:/layout/item_connection.xml",
+        "source": "/Users/yuguosheng/.gradle/daemon/8.5/com.zhuogui.firewall.app-main-49:/layout/item_connection.xml"
+    },
+    {
+        "merged": "/Users/yuguosheng/.gradle/daemon/8.5/com.zhuogui.firewall.app-mergeReleaseResources-47:/layout/item_app.xml",
+        "source": "/Users/yuguosheng/.gradle/daemon/8.5/com.zhuogui.firewall.app-main-49:/layout/item_app.xml"
+    },
+    {
+        "merged": "/Users/yuguosheng/.gradle/daemon/8.5/com.zhuogui.firewall.app-mergeReleaseResources-47:/layout/activity_main.xml",
+        "source": "/Users/yuguosheng/.gradle/daemon/8.5/com.zhuogui.firewall.app-main-49:/layout/activity_main.xml"
+    },
+    {
+        "merged": "/Users/yuguosheng/.gradle/daemon/8.5/com.zhuogui.firewall.app-mergeReleaseResources-47:/layout/fragment_app_detail.xml",
+        "source": "/Users/yuguosheng/.gradle/daemon/8.5/com.zhuogui.firewall.app-main-49:/layout/fragment_app_detail.xml"
+    },
+    {
+        "merged": "/Users/yuguosheng/.gradle/daemon/8.5/com.zhuogui.firewall.app-mergeReleaseResources-47:/layout/item_rule.xml",
+        "source": "/Users/yuguosheng/.gradle/daemon/8.5/com.zhuogui.firewall.app-main-49:/layout/item_rule.xml"
+    },
+    {
+        "merged": "/Users/yuguosheng/.gradle/daemon/8.5/com.zhuogui.firewall.app-mergeReleaseResources-47:/layout/fragment_app_list.xml",
+        "source": "/Users/yuguosheng/.gradle/daemon/8.5/com.zhuogui.firewall.app-main-49:/layout/fragment_app_list.xml"
+    },
+    {
+        "merged": "/Users/yuguosheng/.gradle/daemon/8.5/com.zhuogui.firewall.app-mergeReleaseResources-47:/layout/fragment_rules.xml",
+        "source": "/Users/yuguosheng/.gradle/daemon/8.5/com.zhuogui.firewall.app-main-49:/layout/fragment_rules.xml"
+    },
+    {
+        "merged": "com.zhuogui.firewall.app-mergeReleaseResources-47:/layout/fragment_app_detail.xml",
+        "source": "com.zhuogui.firewall.app-main-49:/layout/fragment_app_detail.xml"
+    },
+    {
+        "merged": "/Users/yuguosheng/.gradle/daemon/8.5/com.zhuogui.firewall.app-mergeReleaseResources-47:/layout/fragment_connections.xml",
+        "source": "/Users/yuguosheng/.gradle/daemon/8.5/com.zhuogui.firewall.app-main-49:/layout/fragment_connections.xml"
+    }
+]

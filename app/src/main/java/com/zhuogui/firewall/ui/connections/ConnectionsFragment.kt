@@ -38,7 +38,7 @@ class ConnectionsFragment : Fragment() {
 
         // 观察实时连接
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.liveConnections.collect { connections ->
+            com.zhuogui.firewall.service.FirewallVpnService.liveConnections.collect { connections ->
                 adapter.submitList(connections)
                 binding.tvEmpty.visibility = if (connections.isEmpty()) View.VISIBLE else View.GONE
                 binding.tvCount.text = "共 ${connections.size} 条连接"

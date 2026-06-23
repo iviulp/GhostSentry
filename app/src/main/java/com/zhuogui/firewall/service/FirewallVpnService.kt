@@ -25,6 +25,8 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
+
 import java.io.FileDescriptor
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -135,12 +137,12 @@ class FirewallVpnService : VpnService() {
             // 创建 TUN 接口
             val builder = Builder()
                 .setSession("卓 GUI 防火墙")
-                .addAddress(VPN_ADDRESS, 32)
+                .addAddress(VPN_ADDRESS, 24)
                 .addRoute(VPN_ROUTE, 0)
                 .addDnsServer("8.8.8.8")
                 .addDnsServer("1.1.1.1")
                 .setMtu(VPN_MTU)
-                .setBlocking(false)
+                .setBlocking(true)
                 .addDisallowedApplication(packageName) // 排除自身
 
             tunFd = builder.establish()
@@ -167,6 +169,15 @@ class FirewallVpnService : VpnService() {
                         Log.e(TAG, "protect() failed: ${e.message}")
                         false
                     }
+                },
+                protectDatagramSocket = { datagramSocket ->
+                    try {
+                        protect(datagramSocket)
+                        true
+                    } catch (e: Exception) {
+                        Log.e(TAG, "protect() failed for DatagramSocket: ${e.message}")
+                        false
+                    }
                 }
             )
             forwarder.proxyConfig = proxyConfig
@@ -179,7 +190,7 @@ class FirewallVpnService : VpnService() {
             // 监听规则变更
             serviceScope.launch {
                 for (unit in reloadSignal) {
-                    loadRules()
+                    reloadRules()
                 }
             }
 
@@ -252,7 +263,14 @@ class FirewallVpnService : VpnService() {
         ) return
 
         // 查找 UID
-        val uid = ConnectionManager.getUidForConnection(info.srcIp, info.srcPort)
+        val uid = ConnectionManager.getUidForConnection(
+            context = this,
+            protocol = info.protocol,
+            srcIp = info.srcIp,
+            srcPort = info.srcPort,
+            dstIp = info.dstIp,
+            dstPort = info.dstPort
+        )
         val appInfo = resolveApp(uid)
 
         val packageName = appInfo?.packageName ?: "unknown"
@@ -269,7 +287,7 @@ class FirewallVpnService : VpnService() {
         // 检查是否被阻止
         val blocked = checkBlocked(packageName, info.dstIp, domain)
 
-        // 记录日志
+        // 异步记录日志与更新UI，绝对不阻塞网卡读包循环
         val log = ConnectionLog(
             packageName = packageName,
             appName = appName,
@@ -279,19 +297,31 @@ class FirewallVpnService : VpnService() {
             protocol = if (info.protocol == PacketHandler.PROTO_TCP) "TCP" else "UDP",
             blocked = blocked
         )
-
-        repository.insertLog(log)
-        updateLiveConnections(log)
+        serviceScope.launch {
+            repository.insertLog(log)
+            updateLiveConnections(log)
+        }
 
         if (blocked) {
             Log.d(TAG, "Blocked: $packageName -> $domain (${info.dstIp}:${info.dstPort})")
+            if (info.protocol == PacketHandler.PROTO_TCP) {
+                // 如果被阻止且是 TCP 连接，发送 RST 包通知客户端关闭连接
+                val rstPacket = PacketHandler.buildTcpPacket(
+                    srcIp = info.dstIp, srcPort = info.dstPort,
+                    dstIp = info.srcIp, dstPort = info.srcPort,
+                    seq = 0, ack = info.tcpSeq + 1,
+                    flags = 0x04.toByte() // RST
+                )
+                writeToTun(ByteBuffer.wrap(rstPacket))
+            }
             return
         }
 
-        // 转发数据包
-        when (info.protocol) {
-            PacketHandler.PROTO_TCP -> forwarder.handleTcp(info, packet)
-            PacketHandler.PROTO_UDP -> forwarder.handleUdp(info, packet)
+        // 允许通过：直接交给用户态转发器处理
+        if (info.protocol == PacketHandler.PROTO_TCP) {
+            forwarder.handleTcp(info, packet)
+        } else {
+            forwarder.handleUdp(info, packet)
         }
     }
 

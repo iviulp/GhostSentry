@@ -25,14 +25,21 @@ object AppInfoHelper {
     }
 
     fun getAppByUid(context: Context, uid: Int): AppInfo? {
-        val pm = context.packageManager
-        val packages = pm.getInstalledApplications(PackageManager.GET_META_DATA)
-        return packages.find { it.uid == uid }?.let { app ->
-            AppInfo(
-                packageName = app.packageName,
-                appName = pm.getApplicationLabel(app).toString(),
-                uid = app.uid
-            )
+        try {
+            val pm = context.packageManager
+            val packages = pm.getPackagesForUid(uid)
+            if (packages != null && packages.isNotEmpty()) {
+                val pkgName = packages[0]
+                val appInfo = pm.getApplicationInfo(pkgName, 0)
+                return AppInfo(
+                    packageName = pkgName,
+                    appName = pm.getApplicationLabel(appInfo).toString(),
+                    uid = uid
+                )
+            }
+        } catch (e: Exception) {
+            // 忽略找不到包的情况
         }
+        return null
     }
 }

@@ -27,6 +27,14 @@ class MainActivity : AppCompatActivity() {
         private const val VPN_REQUEST_CODE = 100
     }
 
+    private val vpnLauncher = registerForActivityResult(
+        androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            startVpnService()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -70,9 +78,18 @@ class MainActivity : AppCompatActivity() {
     private fun startVpn() {
         val intent = VpnService.prepare(this)
         if (intent != null) {
-            startActivityForResult(intent, VPN_REQUEST_CODE)
+            vpnLauncher.launch(intent)
         } else {
-            onActivityResult(VPN_REQUEST_CODE, RESULT_OK, null)
+            startVpnService()
+        }
+    }
+
+    private fun startVpnService() {
+        val intent = Intent(this, FirewallVpnService::class.java)
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            startForegroundService(intent)
+        } else {
+            startService(intent)
         }
     }
 
@@ -80,13 +97,10 @@ class MainActivity : AppCompatActivity() {
         val intent = Intent(this, FirewallVpnService::class.java).apply {
             action = "STOP"
         }
-        stopService(intent)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == VPN_REQUEST_CODE && resultCode == RESULT_OK) {
-            startService(Intent(this, FirewallVpnService::class.java))
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            startForegroundService(intent)
+        } else {
+            startService(intent)
         }
     }
 

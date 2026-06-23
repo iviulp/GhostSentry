@@ -1,323 +1,365 @@
 package com.zhuogui.firewall.vpn
 
 import android.util.Log
-import com.zhuogui.firewall.vpn.PacketHandler.Companion.PROTO_TCP
-import com.zhuogui.firewall.vpn.PacketHandler.Companion.PROTO_UDP
-import com.zhuogui.firewall.vpn.PacketHandler.PacketInfo
 import com.zhuogui.firewall.vpn.proxy.Socks5Proxy
+import java.io.InputStream
+import java.io.OutputStream
+import java.net.DatagramPacket
+import java.net.DatagramSocket
+import java.net.InetAddress
 import java.net.InetSocketAddress
+import java.net.Socket
 import java.nio.ByteBuffer
-import java.nio.channels.DatagramChannel
-import java.nio.channels.SelectionKey
-import java.nio.channels.Selector
-import java.nio.channels.SocketChannel
-import java.nio.channels.spi.AbstractSelectableChannel
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.concurrent.thread
 
 /**
- * Socket 转发器：在 TUN 和真实 Socket 之间转发数据
- *
- * 支持两种模式：
- * 1. 直连模式：直接使用 NIO SocketChannel 连接目标
- * 2. 代理模式：通过 SOCKS5 代理连接目标（用于与现有 VPN 共存）
+ * Socket 转发器：基于纯用户态 TCP/UDP 协议包组装技术，免去本地 Socket 重定向与路由环回烦恼。
  */
 class SocketForwarder(
     private val tunWrite: (ByteBuffer) -> Unit,
-    private val protectSocket: ((java.net.Socket) -> Boolean)? = null
+    val protectSocket: ((Socket) -> Boolean)? = null,
+    val protectDatagramSocket: ((DatagramSocket) -> Boolean)? = null
 ) {
     companion object {
         private const val TAG = "SocketForwarder"
-        private const val BUFFER_SIZE = 32767
     }
 
-    private val executor: ExecutorService = Executors.newCachedThreadPool()
-    private val activeConnections = ConcurrentHashMap<String, Connection>()
+    // 会话表
+    val tcpSessions = ConcurrentHashMap<String, TcpSession>()
+    val udpSessions = ConcurrentHashMap<String, UdpSession>()
 
-    // 代理配置
     @Volatile
     var proxyConfig: Socks5Proxy.ProxyConfig? = null
 
-    data class Connection(
+    /**
+     * 处理来自客户端的 TCP 数据包
+     */
+    fun handleTcp(info: PacketHandler.PacketInfo, rawPacket: ByteBuffer) {
+        val key = "${info.srcIp}:${info.srcPort}->${info.dstIp}:${info.dstPort}"
+        
+        var session = tcpSessions[key]
+        if (session == null) {
+            if (!info.isSYN) return // 如果不是 SYN 起手包，直接忽略
+            
+            session = TcpSession(
+                key = key,
+                srcIp = info.srcIp,
+                srcPort = info.srcPort,
+                dstIp = info.dstIp,
+                dstPort = info.dstPort,
+                forwarder = this,
+                tunWrite = tunWrite
+            )
+            tcpSessions[key] = session
+            session.connectRemote()
+        }
+        
+        session.handleClientPacket(info, rawPacket)
+    }
+
+    /**
+     * 处理来自客户端的 UDP 数据包
+     */
+    fun handleUdp(info: PacketHandler.PacketInfo, rawPacket: ByteBuffer) {
+        val key = "${info.srcIp}:${info.srcPort}->${info.dstIp}:${info.dstPort}"
+        if (info.payloadLength <= 0) return
+
+        val payload = ByteArray(info.payloadLength)
+        val pos = rawPacket.position()
+        rawPacket.position(info.payloadOffset)
+        rawPacket.get(payload)
+        rawPacket.position(pos)
+
+        var session = udpSessions[key]
+        if (session == null) {
+            session = UdpSession(
+                key = key,
+                srcIp = info.srcIp,
+                srcPort = info.srcPort,
+                dstIp = info.dstIp,
+                dstPort = info.dstPort,
+                forwarder = this,
+                tunWrite = tunWrite
+            )
+            udpSessions[key] = session
+            session.start()
+        }
+        session.sendPayload(payload)
+    }
+
+    /**
+     * 关闭并清理所有会话
+     */
+    fun closeAll() {
+        tcpSessions.values.forEach { it.close() }
+        tcpSessions.clear()
+        udpSessions.values.forEach { it.close() }
+        udpSessions.clear()
+    }
+
+    /**
+     * 用户态 TCP 会话状态机
+     */
+    class TcpSession(
         val key: String,
-        val channel: AbstractSelectableChannel?,
-        val socket: java.net.Socket?,
-        val srcIp: String,
-        val srcPort: Int,
-        val dstIp: String,
-        val dstPort: Int,
-        val protocol: Int,
-        val active: AtomicBoolean = AtomicBoolean(true)
-    )
+        val srcIp: String, val srcPort: Int,
+        val dstIp: String, val dstPort: Int,
+        private val forwarder: SocketForwarder,
+        private val tunWrite: (ByteBuffer) -> Unit
+    ) {
+        var clientSeq = 0L
+        var clientAck = 0L
+        var serverSeq = 1000L
+        var serverAck = 0L
+        
+        var remoteSocket: Socket? = null
+        val active = AtomicBoolean(true)
 
-    /**
-     * 处理 TCP 连接
-     */
-    fun handleTcp(packet: PacketInfo, rawPacket: ByteBuffer) {
-        val key = "${packet.srcIp}:${packet.srcPort}->${packet.dstIp}:${packet.dstPort}"
-
-        val existing = activeConnections[key]
-        if (existing != null) {
-            if (packet.isFIN || packet.isRST) {
-                closeConnection(key)
-                return
-            }
-            forwardTcpData(existing, rawPacket, packet)
-            return
-        }
-
-        if (!packet.isSYN) return
-
-        try {
-            val proxy = proxyConfig?.takeIf { it.enabled }
-
-            if (proxy != null) {
-                // 代理模式：通过 SOCKS5 连接
-                handleTcpViaProxy(key, packet, proxy)
-            } else {
-                // 直连模式：直接 SocketChannel
-                handleTcpDirect(key, packet)
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "TCP connect error: ${e.message}")
-        }
-    }
-
-    /**
-     * 直连模式 TCP
-     */
-    private fun handleTcpDirect(key: String, packet: PacketInfo) {
-        val channel = SocketChannel.open()
-        channel.configureBlocking(false)
-        channel.connect(InetSocketAddress(packet.dstIp, packet.dstPort))
-
-        val conn = Connection(
-            key = key,
-            channel = channel,
-            socket = null,
-            srcIp = packet.srcIp,
-            srcPort = packet.srcPort,
-            dstIp = packet.dstIp,
-            dstPort = packet.dstPort,
-            protocol = PROTO_TCP
-        )
-        activeConnections[key] = conn
-
-        executor.submit {
-            handleTcpConnection(conn, channel)
-        }
-    }
-
-    /**
-     * 代理模式 TCP
-     */
-    private fun handleTcpViaProxy(key: String, packet: PacketInfo, proxy: Socks5Proxy.ProxyConfig) {
-        val targetHost = packet.dstIp
-        val targetPort = packet.dstPort
-
-        val socket = Socks5Proxy.connect(proxy, targetHost, targetPort)
-        if (socket == null) {
-            Log.e(TAG, "SOCKS5 proxy connect failed for $targetHost:$targetPort")
-            return
-        }
-
-        // 保护代理 socket，避免走自身 VPN
-        protectSocket?.invoke(socket)
-
-        val conn = Connection(
-            key = key,
-            channel = null,
-            socket = socket,
-            srcIp = packet.srcIp,
-            srcPort = packet.srcPort,
-            dstIp = packet.dstIp,
-            dstPort = packet.dstPort,
-            protocol = PROTO_TCP
-        )
-        activeConnections[key] = conn
-
-        // 启动双向转发线程
-        thread(name = "proxy-tcp-$key") {
-            try {
-                val input = socket.getInputStream()
-                val output = socket.getOutputStream()
-
-                while (conn.active.get()) {
-                    // 读取代理响应 → 写入 TUN
-                    val buffer = ByteArray(BUFFER_SIZE)
-                    val len = input.read(buffer)
-                    if (len < 0) break
-                    if (len > 0) {
-                        tunWrite(ByteBuffer.wrap(buffer, 0, len))
+        fun connectRemote() {
+            thread(name = "TcpConnect-$key") {
+                try {
+                    val proxy = forwarder.proxyConfig?.takeIf { it.enabled }
+                    val socket = if (proxy != null) {
+                        Socks5Proxy.connect(proxy, dstIp, dstPort, 10000, forwarder.protectSocket)
+                    } else {
+                        val s = Socket()
+                        forwarder.protectSocket?.invoke(s)
+                        s.connect(InetSocketAddress(dstIp, dstPort), 10000)
+                        s
                     }
+                    if (socket == null) {
+                        sendRst()
+                        close()
+                        return@thread
+                    }
+                    remoteSocket = socket
+                    
+                    // 连接成功，向客户端回复 SYN-ACK 包完成三次握手
+                    sendSynAck()
+                    
+                    // 启动线程循环读取远端服务器发回的数据，打包成 TCP 回复注入 TUN
+                    val input = socket.getInputStream()
+                    val buffer = ByteArray(32768)
+                    while (active.get() && !socket.isClosed) {
+                        val len = input.read(buffer)
+                        if (len < 0) break
+                        if (len > 0) {
+                            sendData(buffer.copyOfRange(0, len))
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.d(TAG, "Remote connection read ended for $key: ${e.message}")
+                } finally {
+                    close()
+                }
+            }
+        }
+
+        fun handleClientPacket(info: PacketHandler.PacketInfo, rawPacket: ByteBuffer) {
+            clientSeq = info.tcpSeq
+            clientAck = info.tcpAck
+
+            if (info.isSYN) {
+                serverAck = info.tcpSeq + 1
+            } else if (info.payloadLength > 0) {
+                val payload = ByteArray(info.payloadLength)
+                val pos = rawPacket.position()
+                rawPacket.position(info.payloadOffset)
+                rawPacket.get(payload)
+                rawPacket.position(pos)
+
+                try {
+                    remoteSocket?.getOutputStream()?.let { out ->
+                        out.write(payload)
+                        out.flush()
+                    }
+                    serverAck = info.tcpSeq + info.payloadLength
+                    sendAck()
+                } catch (e: Exception) {
+                    sendRst()
+                    close()
+                }
+            } else if (info.isFIN) {
+                serverAck = info.tcpSeq + 1
+                sendFinAck()
+                close()
+            } else if (info.isRST) {
+                close()
+            }
+        }
+
+        private fun sendSynAck() {
+            val response = PacketHandler.buildTcpPacket(
+                srcIp = dstIp, srcPort = dstPort,
+                dstIp = srcIp, dstPort = srcPort,
+                seq = serverSeq, ack = serverAck,
+                flags = 0x12.toByte() // SYN | ACK
+            )
+            serverSeq++
+            tunWrite(ByteBuffer.wrap(response))
+        }
+
+        private fun sendAck() {
+            val response = PacketHandler.buildTcpPacket(
+                srcIp = dstIp, srcPort = dstPort,
+                dstIp = srcIp, dstPort = srcPort,
+                seq = serverSeq, ack = serverAck,
+                flags = 0x10.toByte() // ACK
+            )
+            tunWrite(ByteBuffer.wrap(response))
+        }
+
+        private fun sendData(data: ByteArray) {
+            val response = PacketHandler.buildTcpPacket(
+                srcIp = dstIp, srcPort = dstPort,
+                dstIp = srcIp, dstPort = srcPort,
+                seq = serverSeq, ack = serverAck,
+                flags = 0x18.toByte(), // PSH | ACK
+                payload = data
+            )
+            serverSeq += data.size
+            tunWrite(ByteBuffer.wrap(response))
+        }
+
+        private fun sendFinAck() {
+            val response = PacketHandler.buildTcpPacket(
+                srcIp = dstIp, srcPort = dstPort,
+                dstIp = srcIp, dstPort = srcPort,
+                seq = serverSeq, ack = serverAck,
+                flags = 0x11.toByte() // FIN | ACK
+            )
+            tunWrite(ByteBuffer.wrap(response))
+        }
+
+        private fun sendRst() {
+            val response = PacketHandler.buildTcpPacket(
+                srcIp = dstIp, srcPort = dstPort,
+                dstIp = srcIp, dstPort = srcPort,
+                seq = serverSeq, ack = serverAck,
+                flags = 0x04.toByte() // RST
+            )
+            tunWrite(ByteBuffer.wrap(response))
+        }
+
+        fun close() {
+            if (active.getAndSet(false)) {
+                try { remoteSocket?.close() } catch (_: Exception) {}
+                forwarder.tcpSessions.remove(key)
+            }
+        }
+    }
+
+    /**
+     * 用户态 UDP 会话
+     */
+    class UdpSession(
+        val key: String,
+        val srcIp: String, val srcPort: Int,
+        val dstIp: String, val dstPort: Int,
+        private val forwarder: SocketForwarder,
+        private val tunWrite: (ByteBuffer) -> Unit
+    ) {
+        var remoteSocket: DatagramSocket? = null
+        val active = AtomicBoolean(true)
+
+        fun start() {
+            try {
+                val s = DatagramSocket()
+                forwarder.protectDatagramSocket?.invoke(s)
+                remoteSocket = s
+
+                thread(name = "UdpReceive-$key") {
+                    val buffer = ByteArray(32768)
+                    while (active.get() && !s.isClosed) {
+                        try {
+                            val packet = DatagramPacket(buffer, buffer.size)
+                            s.receive(packet)
+                            val len = packet.length
+                            if (len > 0) {
+                                sendUdpResponse(packet.data.copyOfRange(0, len))
+                            }
+                        } catch (e: Exception) {
+                            break
+                        }
+                    }
+                    close()
                 }
             } catch (e: Exception) {
-                Log.d(TAG, "Proxy TCP read closed: ${e.message}")
-            } finally {
-                closeConnection(key)
+                Log.e(TAG, "UDP Session start failed: ${e.message}")
             }
         }
-    }
 
-    /**
-     * 处理 TCP 连接生命周期（直连模式）
-     */
-    private fun handleTcpConnection(conn: Connection, channel: SocketChannel) {
-        try {
-            val selector = Selector.open()
-            channel.register(selector, SelectionKey.OP_CONNECT)
-
-            while (conn.active.get()) {
-                val ready = selector.select(3000)
-                if (ready == 0) continue
-
-                val keys = selector.selectedKeys().iterator()
-                while (keys.hasNext()) {
-                    val key = keys.next()
-                    keys.remove()
-
-                    if (key.isConnectable) {
-                        try {
-                            channel.finishConnect()
-                            key.interestOps(SelectionKey.OP_READ)
-                        } catch (e: Exception) {
-                            closeConnection(conn.key)
-                            return
-                        }
-                    }
-
-                    if (key.isReadable) {
-                        val buffer = ByteBuffer.allocate(BUFFER_SIZE)
-                        val len = channel.read(buffer)
-                        if (len < 0) {
-                            closeConnection(conn.key)
-                            return
-                        }
-                        if (len > 0) {
-                            buffer.flip()
-                            tunWrite(buffer)
-                        }
-                    }
-                }
+        fun sendPayload(data: ByteArray) {
+            try {
+                val packet = DatagramPacket(data, data.size, InetAddress.getByName(dstIp), dstPort)
+                remoteSocket?.send(packet)
+            } catch (e: Exception) {
+                close()
             }
-        } catch (e: Exception) {
-            Log.d(TAG, "TCP connection closed: ${e.message}")
-        } finally {
-            closeConnection(conn.key)
         }
-    }
 
-    /**
-     * 转发 TCP 数据 (TUN → Socket)
-     */
-    private fun forwardTcpData(conn: Connection, rawPacket: ByteBuffer, packet: PacketInfo) {
-        try {
-            if (packet.payloadLength <= 0) return
+        private fun sendUdpResponse(data: ByteArray) {
+            val payloadSize = data.size
+            val udpLen = 8 + payloadSize
+            val ipLen = 20 + udpLen
+            val buffer = ByteBuffer.allocate(ipLen)
 
-            val payload = ByteArray(packet.payloadLength)
-            val pos = rawPacket.position()
-            rawPacket.position(packet.payloadOffset)
-            rawPacket.get(payload)
-            rawPacket.position(pos)
+            // --- IP Header (UDP) ---
+            buffer.put(0x45.toByte())
+            buffer.put(0.toByte())
+            buffer.putShort(ipLen.toShort())
+            buffer.putShort(1.toShort())
+            buffer.putShort(0x4000.toShort())
+            buffer.put(64.toByte())
+            buffer.put(17.toByte()) // Protocol 17 = UDP
+            buffer.putShort(0.toShort())
 
-            if (conn.socket != null) {
-                // 代理模式：写入 Socket
-                conn.socket.getOutputStream().write(payload)
-            } else {
-                // 直连模式：写入 Channel
-                (conn.channel as? SocketChannel)?.let {
-                    if (it.isConnected) {
-                        it.write(ByteBuffer.wrap(payload))
-                    }
-                }
+            val srcParts = dstIp.split(".").map { it.toInt().toByte() }
+            buffer.put(srcParts[0]); buffer.put(srcParts[1]); buffer.put(srcParts[2]); buffer.put(srcParts[3])
+            val dstParts = srcIp.split(".").map { it.toInt().toByte() }
+            buffer.put(dstParts[0]); buffer.put(dstParts[1]); buffer.put(dstParts[2]); buffer.put(dstParts[3])
+
+            // IP Checksum
+            val ipChecksum = calculateChecksum(buffer, 0, 20)
+            buffer.putShort(10, ipChecksum.toShort())
+
+            // --- UDP Header ---
+            val udpStart = 20
+            buffer.putShort(udpStart, dstPort.toShort())
+            buffer.putShort(udpStart + 2, srcPort.toShort())
+            buffer.putShort(udpStart + 4, udpLen.toShort())
+            buffer.putShort(udpStart + 6, 0.toShort()) // 无 UDP 校验和设为 0
+
+            // 写入载荷
+            buffer.position(udpStart + 8)
+            buffer.put(data)
+
+            tunWrite(ByteBuffer.wrap(buffer.array()))
+        }
+
+        private fun calculateChecksum(buffer: ByteBuffer, offset: Int, length: Int): Int {
+            var sum = 0
+            var i = 0
+            while (i < length - 1) {
+                sum += buffer.getShort(offset + i).toInt() and 0xFFFF
+                i += 2
             }
-        } catch (e: Exception) {
-            Log.d(TAG, "TCP forward error: ${e.message}")
-        }
-    }
-
-    /**
-     * 处理 UDP 数据包
-     */
-    fun handleUdp(packet: PacketInfo, rawPacket: ByteBuffer) {
-        val key = "${packet.srcIp}:${packet.srcPort}->${packet.dstIp}:${packet.dstPort}"
-
-        try {
-            var conn = activeConnections[key]
-            if (conn == null) {
-                val channel = DatagramChannel.open()
-                channel.configureBlocking(false)
-                channel.connect(InetSocketAddress(packet.dstIp, packet.dstPort))
-                conn = Connection(
-                    key = key,
-                    channel = channel,
-                    socket = null,
-                    srcIp = packet.srcIp,
-                    srcPort = packet.srcPort,
-                    dstIp = packet.dstIp,
-                    dstPort = packet.dstPort,
-                    protocol = PROTO_UDP
-                )
-                activeConnections[key] = conn
-
-                executor.submit {
-                    handleUdpReceive(conn)
-                }
+            if (i == length - 1) {
+                sum += (buffer.get(offset + i).toInt() and 0xFF) shl 8
             }
-
-            if (packet.payloadLength <= 0) return
-            val channel = conn.channel as? DatagramChannel ?: return
-            val payload = ByteArray(packet.payloadLength)
-            val pos = rawPacket.position()
-            rawPacket.position(packet.payloadOffset)
-            rawPacket.get(payload)
-            rawPacket.position(pos)
-
-            if (payload.isNotEmpty()) {
-                channel.write(ByteBuffer.wrap(payload))
+            while (sum shr 16 != 0) {
+                sum = (sum and 0xFFFF) + (sum shr 16)
             }
-        } catch (e: Exception) {
-            Log.e(TAG, "UDP error: ${e.message}")
+            return (sum.inv() and 0xFFFF)
         }
-    }
 
-    private fun handleUdpReceive(conn: Connection) {
-        try {
-            val channel = conn.channel as? DatagramChannel ?: return
-            val buffer = ByteBuffer.allocate(BUFFER_SIZE)
-            while (conn.active.get()) {
-                buffer.clear()
-                channel.receive(buffer)
-                buffer.flip()
-                if (buffer.hasRemaining()) {
-                    tunWrite(buffer)
-                }
+        fun close() {
+            if (active.getAndSet(false)) {
+                try { remoteSocket?.close() } catch (_: Exception) {}
+                forwarder.udpSessions.remove(key)
             }
-        } catch (e: Exception) {
-            Log.d(TAG, "UDP receive closed: ${e.message}")
-        } finally {
-            closeConnection(conn.key)
         }
-    }
-
-    private fun closeConnection(key: String) {
-        val conn = activeConnections.remove(key) ?: return
-        conn.active.set(false)
-        try {
-            conn.channel?.close()
-        } catch (e: Exception) { /* ignore */
-        }
-        try {
-            conn.socket?.close()
-        } catch (e: Exception) { /* ignore */
-        }
-    }
-
-    fun closeAll() {
-        activeConnections.keys.forEach { closeConnection(it) }
-        executor.shutdownNow()
     }
 }

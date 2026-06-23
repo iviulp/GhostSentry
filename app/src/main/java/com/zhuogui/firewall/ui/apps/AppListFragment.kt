@@ -47,11 +47,45 @@ class AppListFragment : Fragment() {
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.adapter = adapter
 
+        var allAppsList = emptyList<com.zhuogui.firewall.data.entity.AppInfo>()
+        var searchQuery = ""
+
+        val updateFilteredList = {
+            val filtered = if (searchQuery.isEmpty()) {
+                allAppsList
+            } else {
+                allAppsList.filter {
+                    it.appName.contains(searchQuery, ignoreCase = true) ||
+                    it.packageName.contains(searchQuery, ignoreCase = true)
+                }
+            }
+            adapter.submitList(filtered)
+            binding.tvEmpty.visibility = if (filtered.isEmpty()) View.VISIBLE else View.GONE
+        }
+
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.allApps.collect { apps ->
-                adapter.submitList(apps)
-                binding.tvEmpty.visibility = if (apps.isEmpty()) View.VISIBLE else View.GONE
+                allAppsList = apps
+                updateFilteredList()
             }
+        }
+
+        binding.searchView.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                searchQuery = newText.orEmpty().trim()
+                updateFilteredList()
+                return true
+            }
+        })
+
+        // 确保点击搜索框任何区域都能正常展开并弹出软键盘
+        binding.searchView.setOnClickListener {
+            binding.searchView.onActionViewExpanded()
+            binding.searchView.requestFocus()
         }
 
         binding.swipeRefresh.setOnRefreshListener {
