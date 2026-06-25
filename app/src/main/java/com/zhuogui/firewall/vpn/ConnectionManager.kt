@@ -18,6 +18,17 @@ object ConnectionManager {
     // IP -> 域名映射 (从 DNS 解析)
     private val ipToDomain = ConcurrentHashMap<String, String>()
 
+    // 缓存: clientPort -> domain (DNS 查询)
+    private val pendingDnsQueries = ConcurrentHashMap<Int, String>()
+
+    fun registerPendingDns(port: Int, domain: String) {
+        pendingDnsQueries[port] = domain
+    }
+
+    fun getPendingDns(port: Int): String? {
+        return pendingDnsQueries[port]
+    }
+
     /**
      * 根据源 IP 和端口查找 UID (Android 10+ 优先使用系统 API，旧版本降级使用 /proc)
      */
@@ -139,5 +150,6 @@ object ConnectionManager {
     fun clearCache() {
         uidCache.clear()
         ipToDomain.clear()
+        pendingDnsQueries.clear()
     }
 }

@@ -27611,7 +27611,7 @@ androidx.activity.result.ActivityResultRegistry$LifecycleContainer:
     public static void addObserver()
     public static void clearObservers()
 androidx.activity.result.ActivityResultRegistry:
-    public final void bindRcKey(java.lang.String,int)
+    public final void bindRcKey(int,java.lang.String)
     public abstract boolean dispatchResult()
     public abstract void doDispatch()
     public abstract int generateRandomNumber()
@@ -30816,7 +30816,7 @@ androidx.core.content.res.GradientColorInflaterCompat:
     public static java.lang.reflect.Method sSetLayoutDirectionMethod
     public static boolean sSetLayoutDirectionMethodFetched
     public static void addNode(java.util.ArrayList,char,float[])
-    public static void checkArgumentNonnegative(java.lang.String,int)
+    public static void checkArgumentNonnegative(int,java.lang.String)
     public static void checkState(java.lang.String,boolean)
     public static float clamp(float,float,float)
     public static boolean getBoolean(android.content.res.TypedArray,int,int,boolean)
@@ -34065,7 +34065,7 @@ androidx.room.RoomSQLiteQuery:
     public final void bindBlob(int,byte[])
     public final void bindDouble(int,double)
     public static int getArgCount()
-    public final void init(java.lang.String,int)
+    public final void init(int,java.lang.String)
 androidx.room.SQLiteCopyOpenHelper$createFrameworkOpenHelper$configuration$1
 androidx.room.SQLiteCopyOpenHelper:
     public final android.content.Context context
@@ -34548,7 +34548,7 @@ androidx.versionedparcelable.VersionedParcel:
     public final int readInt(int,int)
     public abstract android.os.Parcelable readParcelable()
     public abstract java.lang.String readString()
-    public final java.lang.String readString(java.lang.String,int)
+    public final java.lang.String readString(int,java.lang.String)
     public abstract androidx.versionedparcelable.VersionedParcelable readVersionedParcelable()
     public abstract void setSerializationFlags()
     public abstract void writeBoolean()
@@ -34561,8 +34561,8 @@ androidx.versionedparcelable.VersionedParcel:
     public final void writeInt(int,int)
     public abstract void writeParcelable()
     public final void writeParcelable(android.os.Parcelable,int)
+    public final void writeString(int,java.lang.String)
     public abstract void writeString(java.lang.String)
-    public final void writeString(java.lang.String,int)
     public abstract void writeToParcel()
     public abstract void writeVersionedParcelable()
     public abstract void writeVersionedParcelableCreator()

@@ -136,7 +136,7 @@ class FirewallVpnService : VpnService() {
         try {
             // 创建 TUN 接口
             val builder = Builder()
-                .setSession("卓 GUI 防火墙")
+                .setSession("捉鬼")
                 .addAddress(VPN_ADDRESS, 24)
                 .addRoute(VPN_ROUTE, 0)
                 .addDnsServer("8.8.8.8")
@@ -278,7 +278,11 @@ class FirewallVpnService : VpnService() {
 
         // 处理 DNS 域名记录
         if (info.domain != null) {
-            ConnectionManager.addDomainMapping(info.dstIp, info.domain)
+            if (info.protocol == PacketHandler.PROTO_UDP && info.dstPort == 53) {
+                ConnectionManager.registerPendingDns(info.srcPort, info.domain)
+            } else {
+                ConnectionManager.addDomainMapping(info.dstIp, info.domain)
+            }
         }
 
         // 获取域名
@@ -462,7 +466,7 @@ class FirewallVpnService : VpnService() {
         )
 
         return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("卓 GUI 防火墙")
+            .setContentTitle("捉鬼")
             .setContentText("正在监控网络流量...")
             .setSmallIcon(android.R.drawable.ic_menu_manage)
             .setContentIntent(pendingIntent)

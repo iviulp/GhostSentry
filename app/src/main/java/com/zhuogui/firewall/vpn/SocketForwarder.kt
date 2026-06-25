@@ -278,7 +278,18 @@ class SocketForwarder(
                             s.receive(packet)
                             val len = packet.length
                             if (len > 0) {
-                                sendUdpResponse(packet.data.copyOfRange(0, len))
+                                val payload = packet.data.copyOfRange(0, len)
+                                // DNS 响应拦截：将解析出的 IP 与域名绑定，便于详情记录展示域名
+                                if (dstPort == 53) {
+                                    val domain = ConnectionManager.getPendingDns(srcPort)
+                                    if (domain != null) {
+                                        val resolvedIps = PacketHandler.parseDnsResponse(payload)
+                                        for (ip in resolvedIps) {
+                                            ConnectionManager.addDomainMapping(ip, domain)
+                                        }
+                                    }
+                                }
+                                sendUdpResponse(payload)
                             }
                         } catch (e: Exception) {
                             break

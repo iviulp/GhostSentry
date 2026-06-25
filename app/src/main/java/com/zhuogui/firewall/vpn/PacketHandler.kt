@@ -340,5 +340,72 @@ object PacketHandler {
             return null
         }
     }
+
+    /**
+     * 解析 DNS 响应中的所有 IPv4 地址
+     */
+    fun parseDnsResponse(payload: ByteArray): List<String> {
+        val ips = mutableListOf<String>()
+        try {
+            val buffer = ByteBuffer.wrap(payload)
+            if (buffer.remaining() < 12) return ips
+
+            val id = buffer.getShort()
+            val flags = buffer.getShort()
+            val qdCount = buffer.getShort().toInt() and 0xFFFF
+            val anCount = buffer.getShort().toInt() and 0xFFFF
+            val nsCount = buffer.getShort()
+            val arCount = buffer.getShort()
+
+            // 跳过 Question 区域
+            var pos = 12
+            for (i in 0 until qdCount) {
+                pos = skipDnsName(buffer, pos)
+                pos += 4 // 跳过 QTYPE (2字节) 和 QCLASS (2字节)
+            }
+
+            // 解析 Answer 区域
+            for (i in 0 until anCount) {
+                if (pos >= buffer.limit()) break
+                pos = skipDnsName(buffer, pos)
+                if (pos + 10 > buffer.limit()) break
+
+                val type = buffer.getShort(pos).toInt() and 0xFFFF
+                val clazz = buffer.getShort(pos + 2).toInt() and 0xFFFF
+                val ttl = buffer.getInt(pos + 4)
+                val dataLen = buffer.getShort(pos + 8).toInt() and 0xFFFF
+                pos += 10
+
+                if (type == 1 && dataLen == 4) { // Type A (IPv4)
+                    if (pos + 4 <= buffer.limit()) {
+                        val ipBytes = ByteArray(4)
+                        buffer.position(pos)
+                        buffer.get(ipBytes)
+                        val ipStr = ipBytes.joinToString(".") { (it.toInt() and 0xFF).toString() }
+                        ips.add(ipStr)
+                    }
+                }
+                pos += dataLen
+            }
+        } catch (e: Exception) {
+            // 忽略解析错误
+        }
+        return ips
+    }
+
+    private fun skipDnsName(buffer: ByteBuffer, startPos: Int): Int {
+        var pos = startPos
+        while (pos < buffer.limit()) {
+            val len = buffer.get(pos).toInt() and 0xFF
+            if (len == 0) {
+                return pos + 1
+            }
+            if ((len and 0xC0) == 0xC0) { // 压缩指针占 2 字节
+                return pos + 2
+            }
+            pos += 1 + len
+        }
+        return pos
+    }
 }
 

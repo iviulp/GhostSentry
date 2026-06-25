@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">卓 GUI 防火墙</string>
+    <string name="app_name">捉鬼</string>
 
     <string name="tab_apps">APP 列表</string>
     <string name="tab_connections">连接日志</string>
