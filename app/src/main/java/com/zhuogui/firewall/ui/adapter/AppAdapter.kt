@@ -30,13 +30,43 @@ class AppAdapter(
             binding.tvPackageName.text = app.packageName
 
             val isBlocked = app.allowed == false
-            binding.switchBlock.isChecked = isBlocked
-            binding.tvStatus.text = if (isBlocked) "已阻止" else "允许"
+            binding.tvStatus.text = if (isBlocked) "已阻止联网" else "允许正常联网"
+            binding.tvStatus.setTextColor(if (isBlocked) 0xFFD32F2F.toInt() else 0xFF2E7D32.toInt())
 
-            binding.switchBlock.setOnCheckedChangeListener(null)
-            binding.switchBlock.isChecked = isBlocked
-            binding.switchBlock.setOnCheckedChangeListener { _, checked ->
-                onToggleBlock(app, checked)
+            val greenColor = 0xFF2E7D32.toInt()
+            val lightGreen = 0xFFE8F5E9.toInt()
+            val redColor = 0xFFC62828.toInt()
+            val lightRed = 0xFFFFEBEE.toInt()
+            val grayColor = 0xFF9E9E9E.toInt()
+            val lightGray = 0xFFE0E0E0.toInt()
+
+            if (isBlocked) {
+                // 允许按钮：置灰
+                binding.btnAllow.strokeColor = android.content.res.ColorStateList.valueOf(lightGray)
+                binding.btnAllow.setTextColor(grayColor)
+                binding.btnAllow.backgroundTintList = android.content.res.ColorStateList.valueOf(0x00000000)
+
+                // 阻止按钮：红底红字
+                binding.btnBlock.strokeColor = android.content.res.ColorStateList.valueOf(redColor)
+                binding.btnBlock.setTextColor(redColor)
+                binding.btnBlock.backgroundTintList = android.content.res.ColorStateList.valueOf(lightRed)
+            } else {
+                // 允许按钮：绿底绿字
+                binding.btnAllow.strokeColor = android.content.res.ColorStateList.valueOf(greenColor)
+                binding.btnAllow.setTextColor(greenColor)
+                binding.btnAllow.backgroundTintList = android.content.res.ColorStateList.valueOf(lightGreen)
+
+                // 阻止按钮：置灰
+                binding.btnBlock.strokeColor = android.content.res.ColorStateList.valueOf(lightGray)
+                binding.btnBlock.setTextColor(grayColor)
+                binding.btnBlock.backgroundTintList = android.content.res.ColorStateList.valueOf(0x00000000)
+            }
+
+            binding.btnAllow.setOnClickListener {
+                onToggleBlock(app, false)
+            }
+            binding.btnBlock.setOnClickListener {
+                onToggleBlock(app, true)
             }
 
             binding.root.setOnClickListener {

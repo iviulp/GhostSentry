@@ -25,6 +25,9 @@ interface AppInfoDao {
     @Query("UPDATE app_info SET allowed = :allowed WHERE packageName = :pkg")
     suspend fun setAllowed(pkg: String, allowed: Boolean?)
 
+    @Query("UPDATE app_info SET allowed = :allowed")
+    suspend fun setAllAllowed(allowed: Boolean?)
+
     @Query("UPDATE app_info SET wifiAllowed = :w, mobileAllowed = :m WHERE packageName = :pkg")
     suspend fun setNetworkType(pkg: String, w: Boolean?, m: Boolean?)
 

@@ -36,7 +36,7 @@ class SocketForwarder(
     /**
      * 处理来自客户端的 TCP 数据包
      */
-    fun handleTcp(info: PacketHandler.PacketInfo, rawPacket: ByteBuffer) {
+    fun handleTcp(info: PacketHandler.PacketInfo, rawPacket: ByteBuffer, packageName: String) {
         val key = "${info.srcIp}:${info.srcPort}->${info.dstIp}:${info.dstPort}"
         
         var session = tcpSessions[key]
@@ -49,6 +49,7 @@ class SocketForwarder(
                 srcPort = info.srcPort,
                 dstIp = info.dstIp,
                 dstPort = info.dstPort,
+                packageName = packageName,
                 forwarder = this,
                 tunWrite = tunWrite
             )
@@ -62,7 +63,7 @@ class SocketForwarder(
     /**
      * 处理来自客户端的 UDP 数据包
      */
-    fun handleUdp(info: PacketHandler.PacketInfo, rawPacket: ByteBuffer) {
+    fun handleUdp(info: PacketHandler.PacketInfo, rawPacket: ByteBuffer, packageName: String) {
         val key = "${info.srcIp}:${info.srcPort}->${info.dstIp}:${info.dstPort}"
         if (info.payloadLength <= 0) return
 
@@ -80,6 +81,7 @@ class SocketForwarder(
                 srcPort = info.srcPort,
                 dstIp = info.dstIp,
                 dstPort = info.dstPort,
+                packageName = packageName,
                 forwarder = this,
                 tunWrite = tunWrite
             )
@@ -106,6 +108,7 @@ class SocketForwarder(
         val key: String,
         val srcIp: String, val srcPort: Int,
         val dstIp: String, val dstPort: Int,
+        val packageName: String,
         private val forwarder: SocketForwarder,
         private val tunWrite: (ByteBuffer) -> Unit
     ) {
@@ -258,6 +261,7 @@ class SocketForwarder(
         val key: String,
         val srcIp: String, val srcPort: Int,
         val dstIp: String, val dstPort: Int,
+        val packageName: String,
         private val forwarder: SocketForwarder,
         private val tunWrite: (ByteBuffer) -> Unit
     ) {

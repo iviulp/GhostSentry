@@ -20,6 +20,9 @@ class FirewallRepository(private val db: AppDatabase) {
     suspend fun setAppAllowed(pkg: String, allowed: Boolean?) =
         db.appInfoDao().setAllowed(pkg, allowed)
 
+    suspend fun setAllAppsAllowed(allowed: Boolean?) =
+        db.appInfoDao().setAllAllowed(allowed)
+
     // ========== FirewallRule ==========
     fun getAllRules(): Flow<List<FirewallRule>> = db.firewallRuleDao().getAllRules()
 

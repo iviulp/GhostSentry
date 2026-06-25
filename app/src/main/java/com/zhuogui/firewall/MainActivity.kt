@@ -51,22 +51,27 @@ class MainActivity : AppCompatActivity() {
                 .commit()
         }
 
-        setupFab()
-        observeVpnState()
+        setupTogglePanel()
     }
 
-    private fun setupFab() {
+    private fun setupTogglePanel() {
         lifecycleScope.launch {
             FirewallVpnService.isRunning.collect { running ->
                 if (running) {
-                    binding.fabVpn.setImageResource(android.R.drawable.ic_media_pause)
+                    binding.tvVpnStatus.text = "正在安全保护中"
+                    binding.tvVpnStatus.setTextColor(0xFF2E7D32.toInt()) // 绿色
+                    binding.btnToggleVpn.text = "关闭防护"
+                    binding.btnToggleVpn.setBackgroundColor(0xFFD32F2F.toInt()) // 红色
                 } else {
-                    binding.fabVpn.setImageResource(android.R.drawable.ic_media_play)
+                    binding.tvVpnStatus.text = "防护已关闭"
+                    binding.tvVpnStatus.setTextColor(0xFFD32F2F.toInt()) // 红色
+                    binding.btnToggleVpn.text = "开启防护"
+                    binding.btnToggleVpn.setBackgroundColor(0xFF2E7D32.toInt()) // 绿色
                 }
             }
         }
 
-        binding.fabVpn.setOnClickListener {
+        binding.btnToggleVpn.setOnClickListener {
             if (FirewallVpnService.isRunning.value) {
                 stopVpn()
             } else {
@@ -101,14 +106,6 @@ class MainActivity : AppCompatActivity() {
             startForegroundService(intent)
         } else {
             startService(intent)
-        }
-    }
-
-    private fun observeVpnState() {
-        lifecycleScope.launch {
-            FirewallVpnService.isRunning.collect { running ->
-                binding.tvVpnStatus.text = if (running) "VPN 运行中" else "VPN 已停止"
-            }
         }
     }
 

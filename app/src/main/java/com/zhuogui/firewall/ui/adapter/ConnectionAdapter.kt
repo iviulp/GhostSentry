@@ -28,10 +28,16 @@ class ConnectionAdapter(
 ) : ListAdapter<ConnectionLog, ConnectionAdapter.ConnectionViewHolder>(ConnectionDiffCallback) {
 
     private val dateFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
+    private var isDeduplicated = false
 
     fun setDisplayMode(mode: String) {
         displayMode = mode
         notifyDataSetChanged()
+    }
+
+    fun setDeduplicated(dedup: Boolean) {
+        isDeduplicated = dedup
+        ConnectionDiffCallback.isDeduplicated = dedup
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ConnectionViewHolder {
@@ -72,15 +78,17 @@ class ConnectionAdapter(
             binding.tvProtocol.text = log.protocol
             binding.tvTime.text = dateFormat.format(Date(log.timestamp))
 
-            // 阻止状态指示
+            // 阻止状态指示与按钮高亮设计
             if (log.blocked) {
-                binding.root.setBackgroundColor(0x20FF0000.toInt())
-                binding.btnBlock.text = "放开"
-                binding.btnBlock.setTextColor(0xFF4CAF50.toInt())
+                binding.root.setBackgroundColor(0x20FF0000.toInt()) // 浅红底色标识阻止
+                binding.btnBlock.text = "放行"
+                binding.btnBlock.setTextColor(0xFF2E7D32.toInt()) // 绿字
+                binding.btnBlock.backgroundTintList = android.content.res.ColorStateList.valueOf(0xFFE8F5E9.toInt()) // 绿底
             } else {
                 binding.root.setBackgroundColor(0x00000000)
                 binding.btnBlock.text = "禁用"
-                binding.btnBlock.setTextColor(0xFFFF4444.toInt())
+                binding.btnBlock.setTextColor(0xFFC62828.toInt()) // 红字
+                binding.btnBlock.backgroundTintList = android.content.res.ColorStateList.valueOf(0xFFFFEBEE.toInt()) // 红底
             }
 
             // 禁用/放开 按钮
@@ -95,10 +103,22 @@ class ConnectionAdapter(
     }
 
     object ConnectionDiffCallback : DiffUtil.ItemCallback<ConnectionLog>() {
-        override fun areItemsTheSame(oldItem: ConnectionLog, newItem: ConnectionLog): Boolean =
-            oldItem.id == newItem.id
+        var isDeduplicated = false
 
-        override fun areContentsTheSame(oldItem: ConnectionLog, newItem: ConnectionLog): Boolean =
-            oldItem == newItem
+        override fun areItemsTheSame(oldItem: ConnectionLog, newItem: ConnectionLog): Boolean {
+            return if (isDeduplicated) {
+                // 去重模式下，相同的包名和目标地址视为同一项（防止频繁更新时闪烁）
+                oldItem.packageName == newItem.packageName &&
+                        (oldItem.destDomain ?: oldItem.destIp) == (newItem.destDomain ?: newItem.destIp)
+            } else {
+                oldItem.id == newItem.id
+            }
+        }
+
+        override fun areContentsTheSame(oldItem: ConnectionLog, newItem: ConnectionLog): Boolean {
+            return oldItem.blocked == newItem.blocked &&
+                    oldItem.destPort == newItem.destPort &&
+                    oldItem.protocol == newItem.protocol
+        }
     }
 }

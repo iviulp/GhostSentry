@@ -3265,9 +3265,13 @@ id bounce
 id bounceBoth
 id bounceEnd
 id bounceStart
+id btnAllow
+id btnAllowAll
 id btnBlock
+id btnBlockAll
 id btnClear
 id btnDelete
+id btnToggleVpn
 id buttonPanel
 id cache_measures
 id callMeasure
@@ -3362,7 +3366,6 @@ id exitUntilCollapsed
 id expand_activities_button
 id expanded_menu
 id fabAddRule
-id fabVpn
 id fade
 id fill
 id fill_horizontal
@@ -3626,9 +3629,9 @@ id submenuarrow
 id submit_area
 id supportScrollUp
 id swipeRefresh
-id switchBlock
 id switchBlocked
 id switchWidget
+id tabLayout
 id tabMode
 id tag_accessibility_actions
 id tag_accessibility_clickable_spans

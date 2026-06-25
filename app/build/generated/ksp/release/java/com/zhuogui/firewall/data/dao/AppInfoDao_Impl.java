@@ -44,6 +44,8 @@ public final class AppInfoDao_Impl implements AppInfoDao {
 
   private final SharedSQLiteStatement __preparedStmtOfSetAllowed;
 
+  private final SharedSQLiteStatement __preparedStmtOfSetAllAllowed;
+
   private final SharedSQLiteStatement __preparedStmtOfSetNetworkType;
 
   public AppInfoDao_Impl(@NonNull final RoomDatabase __db) {
@@ -135,6 +137,14 @@ public final class AppInfoDao_Impl implements AppInfoDao {
       @NonNull
       public String createQuery() {
         final String _query = "UPDATE app_info SET allowed = ? WHERE packageName = ?";
+        return _query;
+      }
+    };
+    this.__preparedStmtOfSetAllAllowed = new SharedSQLiteStatement(__db) {
+      @Override
+      @NonNull
+      public String createQuery() {
+        final String _query = "UPDATE app_info SET allowed = ?";
         return _query;
       }
     };
@@ -230,6 +240,36 @@ public final class AppInfoDao_Impl implements AppInfoDao {
           }
         } finally {
           __preparedStmtOfSetAllowed.release(_stmt);
+        }
+      }
+    }, $completion);
+  }
+
+  @Override
+  public Object setAllAllowed(final Boolean allowed, final Continuation<? super Unit> $completion) {
+    return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
+      @Override
+      @NonNull
+      public Unit call() throws Exception {
+        final SupportSQLiteStatement _stmt = __preparedStmtOfSetAllAllowed.acquire();
+        int _argIndex = 1;
+        final Integer _tmp = allowed == null ? null : (allowed ? 1 : 0);
+        if (_tmp == null) {
+          _stmt.bindNull(_argIndex);
+        } else {
+          _stmt.bindLong(_argIndex, _tmp);
+        }
+        try {
+          __db.beginTransaction();
+          try {
+            _stmt.executeUpdateDelete();
+            __db.setTransactionSuccessful();
+            return Unit.INSTANCE;
+          } finally {
+            __db.endTransaction();
+          }
+        } finally {
+          __preparedStmtOfSetAllAllowed.release(_stmt);
         }
       }
     }, $completion);

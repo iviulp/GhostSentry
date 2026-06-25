@@ -59,7 +59,8 @@ class AppDetailFragment : Fragment() {
     private val _deduplicate = MutableStateFlow(false)
 
     // 当前排序: "domain" | "ip" | "time"
-    private var currentSort: String = "time"
+    private val _sortMode = MutableStateFlow("time")
+    private val _activeTab = MutableStateFlow(0) // 0 = 已允许, 1 = 已阻止
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -89,8 +90,16 @@ class AppDetailFragment : Fragment() {
 
         // 初始化 Adapter
         adapter = ConnectionAdapter(
-            onBlock = { log -> blockConnection(log) },
-            onUnblock = { log -> unblockConnection(log) }
+            onBlock = { log -> 
+                blockConnection(log)
+                // 实时切换到“已阻止”选项卡
+                binding.tabLayout.selectTab(binding.tabLayout.getTabAt(1))
+            },
+            onUnblock = { log -> 
+                unblockConnection(log)
+                // 实时切换到“已允许”选项卡
+                binding.tabLayout.selectTab(binding.tabLayout.getTabAt(0))
+            }
         )
 
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
@@ -106,20 +115,35 @@ class AppDetailFragment : Fragment() {
             _deduplicate.value = isChecked
         }
 
-        // 观察连接数据，当模式或数据或去重状态变化时更新
+        // 监听选项卡切换
+        binding.tabLayout.addOnTabSelectedListener(object : com.google.android.material.tabs.TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: com.google.android.material.tabs.TabLayout.Tab) {
+                _activeTab.value = tab.position
+            }
+            override fun onTabUnselected(tab: com.google.android.material.tabs.TabLayout.Tab) {}
+            override fun onTabReselected(tab: com.google.android.material.tabs.TabLayout.Tab) {}
+        })
+
+        // 观察连接数据，当模式、去重、排序、选项卡或数据变化时更新
         viewLifecycleOwner.lifecycleScope.launch {
             combine(
                 viewModel.getConnectionsForPackage(packageName),
                 _displayMode,
-                _deduplicate
-            ) { logs, mode, dedup ->
+                _deduplicate,
+                _sortMode,
+                _activeTab
+            ) { logs, mode, dedup, sort, activeTab ->
+                // 根据选项卡过滤数据：0为已允许(blocked=false)，1为已阻止(blocked=true)
+                val filteredByTab = logs.filter { it.blocked == (activeTab == 1) }
+
                 val processed = if (dedup) {
-                    logs.distinctBy { it.destDomain ?: it.destIp }
+                    filteredByTab.distinctBy { it.destDomain ?: it.destIp }
                 } else {
-                    logs
+                    filteredByTab
                 }
-                applySort(processed) to mode
+                applySort(processed, sort) to mode
             }.collectLatest { (sorted, mode) ->
+                adapter.setDeduplicated(binding.chipDeduplicate.isChecked)
                 adapter.setDisplayMode(mode)
                 adapter.submitList(sorted)
                 updateEmptyState(sorted)
@@ -156,7 +180,7 @@ class AppDetailFragment : Fragment() {
     }
 
     private fun switchSort(sort: String) {
-        currentSort = sort
+        _sortMode.value = sort
         binding.chipSortTime.isChecked = sort == "time"
         binding.chipSortDomain.isChecked = sort == "domain"
         binding.chipSortIp.isChecked = sort == "ip"
@@ -165,8 +189,8 @@ class AppDetailFragment : Fragment() {
     /**
      * 根据排序方式排序
      */
-    private fun applySort(logs: List<ConnectionLog>): List<ConnectionLog> {
-        return when (currentSort) {
+    private fun applySort(logs: List<ConnectionLog>, sort: String): List<ConnectionLog> {
+        return when (sort) {
             "domain" -> logs.sortedWith(
                 compareBy<ConnectionLog> { it.destDomain ?: it.destIp }
                     .thenByDescending { it.timestamp }

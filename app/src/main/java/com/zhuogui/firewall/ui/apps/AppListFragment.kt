@@ -82,6 +82,29 @@ class AppListFragment : Fragment() {
             }
         })
 
+        // 一键全部阻止/允许
+        binding.btnBlockAll.setOnClickListener {
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle("提示")
+                .setMessage("确定要阻止所有应用的联网权限吗？")
+                .setPositiveButton("确定") { _, _ ->
+                    viewModel.setAllAppsAllowed(false)
+                }
+                .setNegativeButton("取消", null)
+                .show()
+        }
+
+        binding.btnAllowAll.setOnClickListener {
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle("提示")
+                .setMessage("确定要放行所有应用的联网权限吗？")
+                .setPositiveButton("确定") { _, _ ->
+                    viewModel.setAllAppsAllowed(null)
+                }
+                .setNegativeButton("取消", null)
+                .show()
+        }
+
         // 确保点击搜索框任何区域都能正常展开并弹出软键盘
         binding.searchView.setOnClickListener {
             binding.searchView.onActionViewExpanded()

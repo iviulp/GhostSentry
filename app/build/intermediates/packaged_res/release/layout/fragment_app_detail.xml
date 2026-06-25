@@ -167,6 +167,27 @@
 
     </LinearLayout>
 
+    <!-- 选项卡切换 (已允许/已阻止) -->
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:tabGravity="fill"
+        app:tabMode="fixed"
+        android:background="?android:colorBackground">
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="已允许" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="已阻止" />
+
+    </com.google.android.material.tabs.TabLayout>
+
     <!-- 分割线 -->
     <View
         android:layout_width="match_parent"

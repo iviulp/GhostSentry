@@ -66,6 +66,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun setAllAppsAllowed(allowed: Boolean?) {
+        viewModelScope.launch {
+            repository.setAllAppsAllowed(allowed)
+            notifyVpnReload()
+        }
+    }
+
     fun addRule(rule: FirewallRule) {
         viewModelScope.launch {
             repository.insertRule(rule)

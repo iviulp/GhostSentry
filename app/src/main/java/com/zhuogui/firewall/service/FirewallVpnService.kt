@@ -323,9 +323,9 @@ class FirewallVpnService : VpnService() {
 
         // 允许通过：直接交给用户态转发器处理
         if (info.protocol == PacketHandler.PROTO_TCP) {
-            forwarder.handleTcp(info, packet)
+            forwarder.handleTcp(info, packet, packageName)
         } else {
-            forwarder.handleUdp(info, packet)
+            forwarder.handleUdp(info, packet, packageName)
         }
     }
 
@@ -373,37 +373,38 @@ class FirewallVpnService : VpnService() {
     }
 
     /**
-     * 加载所有规则
+     * 加载所有规则（使用临时变量以进行原子切换，消除竞态问题，并主动清理已连接会话）
      */
     private suspend fun loadRules() {
         try {
             val db = ZhuoguiApp.instance.database
 
-            // 加载 APP 阻止状态
+            // 1. 加载 APP 阻止状态到临时集合
             val allApps = db.appInfoDao().getAllApps()
+            val tempBlockedApps = ConcurrentHashMap.newKeySet<String>()
             try {
                 val apps = allApps.first()
                 apps.forEach { app ->
                     if (app.allowed == false) {
-                        blockedApps.add(app.packageName)
-                    } else {
-                        blockedApps.remove(app.packageName)
+                        tempBlockedApps.add(app.packageName)
                     }
                 }
             } catch (_: NoSuchElementException) {
                 // 空列表
             }
 
-            // 加载防火墙规则
+            // 2. 加载防火墙规则到临时集合
             val allRules = db.firewallRuleDao().getAllRules()
+            val tempGlobalBlockRules = ConcurrentHashMap<String, Boolean>()
+            val tempAppBlockRules = ConcurrentHashMap<String, ConcurrentHashMap<String, Boolean>>()
             try {
                 val rules = allRules.first()
                 rules.forEach { rule ->
                     if (!rule.blocked) return@forEach
                     if (rule.packageName == "*") {
-                        globalBlockRules[rule.target] = true
+                        tempGlobalBlockRules[rule.target] = true
                     } else {
-                        appBlockRules.getOrPut(rule.packageName) {
+                        tempAppBlockRules.getOrPut(rule.packageName) {
                             ConcurrentHashMap()
                         }[rule.target] = true
                     }
@@ -411,18 +412,43 @@ class FirewallVpnService : VpnService() {
             } catch (_: NoSuchElementException) {
                 // 空列表
             }
+
+            // 3. 原子更新主集合
+            blockedApps.clear()
+            blockedApps.addAll(tempBlockedApps)
+
+            globalBlockRules.clear()
+            globalBlockRules.putAll(tempGlobalBlockRules)
+
+            appBlockRules.clear()
+            appBlockRules.putAll(tempAppBlockRules)
+
+            Log.i(TAG, "Rules loaded: blockedApps=${blockedApps.size}, appBlockRules=${appBlockRules.size}")
+
+            // 4. 实时截断：如果之前已建立连接的应用现在被拉入黑名单，则立即强制断开其活动 Socket 管道
+            if (::forwarder.isInitialized) {
+                forwarder.tcpSessions.values.forEach { session ->
+                    if (checkBlocked(session.packageName, session.dstIp, null)) {
+                        Log.i(TAG, "Closing active TCP session for newly blocked package: ${session.packageName}")
+                        session.close()
+                    }
+                }
+                forwarder.udpSessions.values.forEach { session ->
+                    if (checkBlocked(session.packageName, session.dstIp, null)) {
+                        Log.i(TAG, "Closing active UDP session for newly blocked package: ${session.packageName}")
+                        session.close()
+                    }
+                }
+            }
         } catch (e: Exception) {
             Log.e(TAG, "Load rules error: ${e.message}")
         }
     }
 
     /**
-     * 重新加载规则 (外部调用)
+     * 重新加载规则 (外部调用，不提前清空避免网络瞬间裸奔)
      */
     fun reloadRules() {
-        globalBlockRules.clear()
-        appBlockRules.clear()
-        blockedApps.clear()
         serviceScope.launch {
             loadRules()
         }
