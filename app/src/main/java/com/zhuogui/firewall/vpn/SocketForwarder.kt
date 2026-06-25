@@ -36,7 +36,7 @@ class SocketForwarder(
     /**
      * 处理来自客户端的 TCP 数据包
      */
-    fun handleTcp(info: PacketHandler.PacketInfo, rawPacket: ByteBuffer, packageName: String) {
+    fun handleTcp(info: PacketHandler.PacketInfo, rawPacket: ByteBuffer, packageName: String, appName: String) {
         val key = "${info.srcIp}:${info.srcPort}->${info.dstIp}:${info.dstPort}"
         
         var session = tcpSessions[key]
@@ -50,6 +50,7 @@ class SocketForwarder(
                 dstIp = info.dstIp,
                 dstPort = info.dstPort,
                 packageName = packageName,
+                appName = appName,
                 forwarder = this,
                 tunWrite = tunWrite
             )
@@ -110,6 +111,7 @@ class SocketForwarder(
         val srcIp: String, val srcPort: Int,
         val dstIp: String, val dstPort: Int,
         var packageName: String,
+        var appName: String,
         private val forwarder: SocketForwarder,
         private val tunWrite: (ByteBuffer) -> Unit
     ) {
@@ -127,6 +129,7 @@ class SocketForwarder(
             sendSynAck()
 
             thread(name = "TcpConnect-$key") {
+                var connStatus = "SUCCESS"
                 try {
                     // 等待客户端响应并建立连接状态以使系统记录连接所有者
                     Thread.sleep(20)
@@ -139,13 +142,17 @@ class SocketForwarder(
                         dstIp = dstIp, dstPort = dstPort
                     )
 
-                    val resolvedPackageName = if (realUid >= 0) {
+                    if (realUid >= 0) {
                         val pm = com.zhuogui.firewall.ZhuoguiApp.instance.packageManager
-                        pm.getPackagesForUid(realUid)?.firstOrNull() ?: packageName
-                    } else {
-                        packageName
+                        val pkgs = pm.getPackagesForUid(realUid)
+                        val resolvedPackageName = pkgs?.firstOrNull() ?: packageName
+                        packageName = resolvedPackageName
+                        
+                        try {
+                            val appInfo = pm.getApplicationInfo(resolvedPackageName, 0)
+                            appName = pm.getApplicationLabel(appInfo).toString()
+                        } catch (_: Exception) {}
                     }
-                    packageName = resolvedPackageName
 
                     // 3. 安全审计：如果检测出真实包名已被列入黑名单，则立即斩断连接
                     // （由系统服务层判定 checkBlocked，避免黑客应用伪装）
@@ -161,6 +168,7 @@ class SocketForwarder(
 
                     if (isBlocked) {
                         Log.i("TcpSession", "Blocked newly resolved package: $packageName")
+                        connStatus = "BLOCKED"
                         sendRst()
                         close()
                         return@thread
@@ -179,15 +187,25 @@ class SocketForwarder(
 
                     // 4. 选择直连还是走代理：代理应用本身必须直连，用户设置为直连的也直连
                     val finalProxy = if (proxy != null && isProxyEnabledForApp && packageName != proxy.proxyPackage) proxy else null
-                    val socket = if (finalProxy != null) {
-                        Socks5Proxy.connect(finalProxy, dstIp, dstPort, 10000, forwarder.protectSocket)
-                    } else {
-                        val s = Socket()
-                        forwarder.protectSocket?.invoke(s)
-                        s.connect(InetSocketAddress(dstIp, dstPort), 10000)
-                        s
+                    val socket = try {
+                        if (finalProxy != null) {
+                            Socks5Proxy.connect(finalProxy, dstIp, dstPort, 10000, forwarder.protectSocket)
+                        } else {
+                            val s = Socket()
+                            forwarder.protectSocket?.invoke(s)
+                            s.connect(InetSocketAddress(dstIp, dstPort), 10000)
+                            s
+                        }
+                    } catch (e: java.net.SocketTimeoutException) {
+                        connStatus = "TIMEOUT"
+                        throw e
+                    } catch (e: Exception) {
+                        connStatus = "FAILED"
+                        throw e
                     }
+
                     if (socket == null) {
+                        connStatus = "FAILED"
                         sendRst()
                         close()
                         return@thread
@@ -217,6 +235,18 @@ class SocketForwarder(
                 } catch (e: Exception) {
                     Log.d(TAG, "Remote connection read ended for $key: ${e.message}")
                 } finally {
+                    val domain = ConnectionManager.getDomainForIp(dstIp)
+                    val finalLog = com.zhuogui.firewall.data.entity.ConnectionLog(
+                        packageName = packageName,
+                        appName = appName,
+                        destIp = dstIp,
+                        destPort = dstPort,
+                        destDomain = domain,
+                        protocol = "TCP",
+                        blocked = (connStatus == "BLOCKED"),
+                        status = connStatus
+                    )
+                    com.zhuogui.firewall.service.FirewallVpnService.serviceInstance?.logConnection(finalLog)
                     close()
                 }
             }

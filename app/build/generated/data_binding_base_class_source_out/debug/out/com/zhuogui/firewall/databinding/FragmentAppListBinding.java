@@ -13,6 +13,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.tabs.TabLayout;
 import com.zhuogui.firewall.R;
 import java.lang.NullPointerException;
 import java.lang.Override;
@@ -21,6 +23,12 @@ import java.lang.String;
 public final class FragmentAppListBinding implements ViewBinding {
   @NonNull
   private final LinearLayout rootView;
+
+  @NonNull
+  public final MaterialButton btnAllowAll;
+
+  @NonNull
+  public final MaterialButton btnBlockAll;
 
   @NonNull
   public final RecyclerView recyclerView;
@@ -32,15 +40,23 @@ public final class FragmentAppListBinding implements ViewBinding {
   public final SwipeRefreshLayout swipeRefresh;
 
   @NonNull
+  public final TabLayout tabLayoutFilter;
+
+  @NonNull
   public final TextView tvEmpty;
 
-  private FragmentAppListBinding(@NonNull LinearLayout rootView, @NonNull RecyclerView recyclerView,
-      @NonNull SearchView searchView, @NonNull SwipeRefreshLayout swipeRefresh,
+  private FragmentAppListBinding(@NonNull LinearLayout rootView,
+      @NonNull MaterialButton btnAllowAll, @NonNull MaterialButton btnBlockAll,
+      @NonNull RecyclerView recyclerView, @NonNull SearchView searchView,
+      @NonNull SwipeRefreshLayout swipeRefresh, @NonNull TabLayout tabLayoutFilter,
       @NonNull TextView tvEmpty) {
     this.rootView = rootView;
+    this.btnAllowAll = btnAllowAll;
+    this.btnBlockAll = btnBlockAll;
     this.recyclerView = recyclerView;
     this.searchView = searchView;
     this.swipeRefresh = swipeRefresh;
+    this.tabLayoutFilter = tabLayoutFilter;
     this.tvEmpty = tvEmpty;
   }
 
@@ -71,6 +87,18 @@ public final class FragmentAppListBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
+      id = R.id.btnAllowAll;
+      MaterialButton btnAllowAll = ViewBindings.findChildViewById(rootView, id);
+      if (btnAllowAll == null) {
+        break missingId;
+      }
+
+      id = R.id.btnBlockAll;
+      MaterialButton btnBlockAll = ViewBindings.findChildViewById(rootView, id);
+      if (btnBlockAll == null) {
+        break missingId;
+      }
+
       id = R.id.recyclerView;
       RecyclerView recyclerView = ViewBindings.findChildViewById(rootView, id);
       if (recyclerView == null) {
@@ -89,14 +117,20 @@ public final class FragmentAppListBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.tabLayoutFilter;
+      TabLayout tabLayoutFilter = ViewBindings.findChildViewById(rootView, id);
+      if (tabLayoutFilter == null) {
+        break missingId;
+      }
+
       id = R.id.tvEmpty;
       TextView tvEmpty = ViewBindings.findChildViewById(rootView, id);
       if (tvEmpty == null) {
         break missingId;
       }
 
-      return new FragmentAppListBinding((LinearLayout) rootView, recyclerView, searchView,
-          swipeRefresh, tvEmpty);
+      return new FragmentAppListBinding((LinearLayout) rootView, btnAllowAll, btnBlockAll,
+          recyclerView, searchView, swipeRefresh, tabLayoutFilter, tvEmpty);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

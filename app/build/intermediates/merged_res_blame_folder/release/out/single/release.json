@@ -1,5 +1,9 @@
 [
     {
+        "merged": "com.zhuogui.firewall.app-merged_res-48:/layout_fragment_app_list.xml.flat",
+        "source": "com.zhuogui.firewall.app-main-49:/layout/fragment_app_list.xml"
+    },
+    {
         "merged": "/Users/yuguosheng/.gradle/daemon/8.5/com.zhuogui.firewall.app-merged_res-48:/menu_main_menu.xml.flat",
         "source": "/Users/yuguosheng/.gradle/daemon/8.5/com.zhuogui.firewall.app-main-49:/menu/main_menu.xml"
     },
@@ -46,9 +50,5 @@
     {
         "merged": "/Users/yuguosheng/.gradle/daemon/8.5/com.zhuogui.firewall.app-merged_res-48:/layout_item_rule.xml.flat",
         "source": "/Users/yuguosheng/.gradle/daemon/8.5/com.zhuogui.firewall.app-main-49:/layout/item_rule.xml"
-    },
-    {
-        "merged": "com.zhuogui.firewall.app-merged_res-48:/layout_item_app.xml.flat",
-        "source": "com.zhuogui.firewall.app-main-49:/layout/item_app.xml"
     }
 ]

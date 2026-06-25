@@ -14,6 +14,7 @@ import androidx.viewbinding.ViewBindings;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
+import com.google.android.material.tabs.TabLayout;
 import com.zhuogui.firewall.R;
 import java.lang.NullPointerException;
 import java.lang.Override;
@@ -25,6 +26,9 @@ public final class FragmentAppDetailBinding implements ViewBinding {
 
   @NonNull
   public final Chip chipAll;
+
+  @NonNull
+  public final Chip chipDeduplicate;
 
   @NonNull
   public final Chip chipDomain;
@@ -51,6 +55,9 @@ public final class FragmentAppDetailBinding implements ViewBinding {
   public final RecyclerView recyclerView;
 
   @NonNull
+  public final TabLayout tabLayout;
+
+  @NonNull
   public final MaterialToolbar toolbar;
 
   @NonNull
@@ -63,13 +70,14 @@ public final class FragmentAppDetailBinding implements ViewBinding {
   public final TextView tvPackageName;
 
   private FragmentAppDetailBinding(@NonNull LinearLayout rootView, @NonNull Chip chipAll,
-      @NonNull Chip chipDomain, @NonNull ChipGroup chipGroupMode, @NonNull ChipGroup chipGroupSort,
-      @NonNull Chip chipIp, @NonNull Chip chipSortDomain, @NonNull Chip chipSortIp,
-      @NonNull Chip chipSortTime, @NonNull RecyclerView recyclerView,
-      @NonNull MaterialToolbar toolbar, @NonNull TextView tvAppName, @NonNull TextView tvEmpty,
-      @NonNull TextView tvPackageName) {
+      @NonNull Chip chipDeduplicate, @NonNull Chip chipDomain, @NonNull ChipGroup chipGroupMode,
+      @NonNull ChipGroup chipGroupSort, @NonNull Chip chipIp, @NonNull Chip chipSortDomain,
+      @NonNull Chip chipSortIp, @NonNull Chip chipSortTime, @NonNull RecyclerView recyclerView,
+      @NonNull TabLayout tabLayout, @NonNull MaterialToolbar toolbar, @NonNull TextView tvAppName,
+      @NonNull TextView tvEmpty, @NonNull TextView tvPackageName) {
     this.rootView = rootView;
     this.chipAll = chipAll;
+    this.chipDeduplicate = chipDeduplicate;
     this.chipDomain = chipDomain;
     this.chipGroupMode = chipGroupMode;
     this.chipGroupSort = chipGroupSort;
@@ -78,6 +86,7 @@ public final class FragmentAppDetailBinding implements ViewBinding {
     this.chipSortIp = chipSortIp;
     this.chipSortTime = chipSortTime;
     this.recyclerView = recyclerView;
+    this.tabLayout = tabLayout;
     this.toolbar = toolbar;
     this.tvAppName = tvAppName;
     this.tvEmpty = tvEmpty;
@@ -114,6 +123,12 @@ public final class FragmentAppDetailBinding implements ViewBinding {
       id = R.id.chipAll;
       Chip chipAll = ViewBindings.findChildViewById(rootView, id);
       if (chipAll == null) {
+        break missingId;
+      }
+
+      id = R.id.chipDeduplicate;
+      Chip chipDeduplicate = ViewBindings.findChildViewById(rootView, id);
+      if (chipDeduplicate == null) {
         break missingId;
       }
 
@@ -165,6 +180,12 @@ public final class FragmentAppDetailBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.tabLayout;
+      TabLayout tabLayout = ViewBindings.findChildViewById(rootView, id);
+      if (tabLayout == null) {
+        break missingId;
+      }
+
       id = R.id.toolbar;
       MaterialToolbar toolbar = ViewBindings.findChildViewById(rootView, id);
       if (toolbar == null) {
@@ -189,9 +210,9 @@ public final class FragmentAppDetailBinding implements ViewBinding {
         break missingId;
       }
 
-      return new FragmentAppDetailBinding((LinearLayout) rootView, chipAll, chipDomain,
-          chipGroupMode, chipGroupSort, chipIp, chipSortDomain, chipSortIp, chipSortTime,
-          recyclerView, toolbar, tvAppName, tvEmpty, tvPackageName);
+      return new FragmentAppDetailBinding((LinearLayout) rootView, chipAll, chipDeduplicate,
+          chipDomain, chipGroupMode, chipGroupSort, chipIp, chipSortDomain, chipSortIp,
+          chipSortTime, recyclerView, tabLayout, toolbar, tvAppName, tvEmpty, tvPackageName);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

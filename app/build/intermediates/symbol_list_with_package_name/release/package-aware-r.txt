@@ -3633,6 +3633,7 @@ id swipeRefresh
 id switchBlocked
 id switchWidget
 id tabLayout
+id tabLayoutFilter
 id tabMode
 id tag_accessibility_actions
 id tag_accessibility_clickable_spans

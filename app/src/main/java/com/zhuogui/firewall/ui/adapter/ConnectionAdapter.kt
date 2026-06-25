@@ -78,14 +78,28 @@ class ConnectionAdapter(
             binding.tvProtocol.text = log.protocol
             binding.tvTime.text = dateFormat.format(Date(log.timestamp))
 
-            // 阻止状态指示与按钮高亮设计
-            if (log.blocked) {
-                binding.root.setBackgroundColor(0x20FF0000.toInt()) // 浅红底色标识阻止
+            // 阻止/连接状态指示与按钮高亮设计
+            val statusColor = when (log.status) {
+                "SUCCESS" -> 0xFF2E7D32.toInt() // 绿字
+                "FAILED" -> 0xFFD32F2F.toInt() // 红字
+                "TIMEOUT" -> 0xFFF57C00.toInt() // 橙字
+                "BLOCKED" -> 0xFF7B1FA2.toInt() // 紫字
+                else -> 0xFF2E7D32.toInt()
+            }
+            binding.tvProtocol.text = "${log.protocol} (${log.status})"
+            binding.tvProtocol.setTextColor(statusColor)
+
+            if (log.blocked || log.status == "BLOCKED") {
+                binding.root.setBackgroundColor(0x157B1FA2.toInt()) // 浅紫/红底色标识被阻止
                 binding.btnBlock.text = "放行"
                 binding.btnBlock.setTextColor(0xFF2E7D32.toInt()) // 绿字
                 binding.btnBlock.backgroundTintList = android.content.res.ColorStateList.valueOf(0xFFE8F5E9.toInt()) // 绿底
             } else {
-                binding.root.setBackgroundColor(0x00000000)
+                if (log.status == "FAILED" || log.status == "TIMEOUT") {
+                    binding.root.setBackgroundColor(0x15D32F2F.toInt()) // 浅红底色标识访问超时或失败
+                } else {
+                    binding.root.setBackgroundColor(0x00000000)
+                }
                 binding.btnBlock.text = "禁用"
                 binding.btnBlock.setTextColor(0xFFC62828.toInt()) // 红字
                 binding.btnBlock.backgroundTintList = android.content.res.ColorStateList.valueOf(0xFFFFEBEE.toInt()) // 红底
@@ -93,7 +107,7 @@ class ConnectionAdapter(
 
             // 禁用/放开 按钮
             binding.btnBlock.setOnClickListener {
-                if (log.blocked) {
+                if (log.blocked || log.status == "BLOCKED") {
                     onUnblock?.invoke(log)
                 } else {
                     onBlock?.invoke(log)

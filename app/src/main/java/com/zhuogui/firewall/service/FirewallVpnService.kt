@@ -53,6 +53,10 @@ class FirewallVpnService : VpnService() {
         private val _liveConnections = MutableStateFlow<List<ConnectionLog>>(emptyList())
         val liveConnections: StateFlow<List<ConnectionLog>> = _liveConnections
 
+        // 服务单例引用，便于后台线程（如 SocketForwarder）调用日志写入接口
+        @Volatile
+        var serviceInstance: FirewallVpnService? = null
+
         // 规则重载信号
         private val reloadSignal = Channel<Unit>(Channel.CONFLATED)
 
@@ -118,6 +122,7 @@ class FirewallVpnService : VpnService() {
 
     override fun onCreate() {
         super.onCreate()
+        serviceInstance = this
         repository = FirewallRepository(ZhuoguiApp.instance.database)
         createNotificationChannel()
         serviceScope.launch {
@@ -242,6 +247,9 @@ class FirewallVpnService : VpnService() {
     private fun stopVpn() {
         active.set(false)
         _isRunning.value = false
+        if (serviceInstance == this) {
+            serviceInstance = null
+        }
         if (::forwarder.isInitialized) {
             forwarder.closeAll()
         }
@@ -321,23 +329,20 @@ class FirewallVpnService : VpnService() {
         // 检查是否被阻止
         val blocked = checkBlocked(packageName, info.dstIp, domain)
 
-        // 异步记录日志与更新UI，绝对不阻塞网卡读包循环
-        val log = ConnectionLog(
-            packageName = packageName,
-            appName = appName,
-            destIp = info.dstIp,
-            destPort = info.dstPort,
-            destDomain = domain,
-            protocol = if (info.protocol == PacketHandler.PROTO_TCP) "TCP" else "UDP",
-            blocked = blocked
-        )
-        serviceScope.launch {
-            repository.insertLog(log)
-            updateLiveConnections(log)
-        }
-
         if (blocked) {
             Log.d(TAG, "Blocked: $packageName -> $domain (${info.dstIp}:${info.dstPort})")
+            val log = ConnectionLog(
+                packageName = packageName,
+                appName = appName,
+                destIp = info.dstIp,
+                destPort = info.dstPort,
+                destDomain = domain,
+                protocol = if (info.protocol == PacketHandler.PROTO_TCP) "TCP" else "UDP",
+                blocked = true,
+                status = "BLOCKED"
+            )
+            logConnection(log)
+
             if (info.protocol == PacketHandler.PROTO_TCP) {
                 // 如果被阻止且是 TCP 连接，发送 RST 包通知客户端关闭连接
                 val rstPacket = PacketHandler.buildTcpPacket(
@@ -353,8 +358,21 @@ class FirewallVpnService : VpnService() {
 
         // 允许通过：直接交给用户态转发器处理
         if (info.protocol == PacketHandler.PROTO_TCP) {
-            forwarder.handleTcp(info, packet, packageName)
+            // TCP 连接日志将在 SocketForwarder 中确定连接成功、失败或超时状态后再异步记录
+            forwarder.handleTcp(info, packet, packageName, appName)
         } else {
+            // UDP 是无连接的，直接记录为 SUCCESS
+            val log = ConnectionLog(
+                packageName = packageName,
+                appName = appName,
+                destIp = info.dstIp,
+                destPort = info.dstPort,
+                destDomain = domain,
+                protocol = "UDP",
+                blocked = false,
+                status = "SUCCESS"
+            )
+            logConnection(log)
             forwarder.handleUdp(info, packet, packageName)
         }
     }
@@ -493,6 +511,16 @@ class FirewallVpnService : VpnService() {
     fun reloadRules() {
         serviceScope.launch {
             loadRules()
+        }
+    }
+
+    /**
+     * 公开的写入连接日志方法，供 SocketForwarder 等后台线程调用
+     */
+    fun logConnection(log: ConnectionLog) {
+        serviceScope.launch {
+            repository.insertLog(log)
+            updateLiveConnections(log)
         }
     }
 

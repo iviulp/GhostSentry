@@ -4,12 +4,12 @@ package com.zhuogui.firewall.databinding;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Switch;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.zhuogui.firewall.R;
 import java.lang.NullPointerException;
@@ -21,7 +21,13 @@ public final class ItemAppBinding implements ViewBinding {
   private final MaterialCardView rootView;
 
   @NonNull
-  public final Switch switchBlock;
+  public final MaterialButton btnAllow;
+
+  @NonNull
+  public final MaterialButton btnBlock;
+
+  @NonNull
+  public final MaterialButton btnProxy;
 
   @NonNull
   public final TextView tvAppName;
@@ -32,10 +38,13 @@ public final class ItemAppBinding implements ViewBinding {
   @NonNull
   public final TextView tvStatus;
 
-  private ItemAppBinding(@NonNull MaterialCardView rootView, @NonNull Switch switchBlock,
+  private ItemAppBinding(@NonNull MaterialCardView rootView, @NonNull MaterialButton btnAllow,
+      @NonNull MaterialButton btnBlock, @NonNull MaterialButton btnProxy,
       @NonNull TextView tvAppName, @NonNull TextView tvPackageName, @NonNull TextView tvStatus) {
     this.rootView = rootView;
-    this.switchBlock = switchBlock;
+    this.btnAllow = btnAllow;
+    this.btnBlock = btnBlock;
+    this.btnProxy = btnProxy;
     this.tvAppName = tvAppName;
     this.tvPackageName = tvPackageName;
     this.tvStatus = tvStatus;
@@ -68,9 +77,21 @@ public final class ItemAppBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
-      id = R.id.switchBlock;
-      Switch switchBlock = ViewBindings.findChildViewById(rootView, id);
-      if (switchBlock == null) {
+      id = R.id.btnAllow;
+      MaterialButton btnAllow = ViewBindings.findChildViewById(rootView, id);
+      if (btnAllow == null) {
+        break missingId;
+      }
+
+      id = R.id.btnBlock;
+      MaterialButton btnBlock = ViewBindings.findChildViewById(rootView, id);
+      if (btnBlock == null) {
+        break missingId;
+      }
+
+      id = R.id.btnProxy;
+      MaterialButton btnProxy = ViewBindings.findChildViewById(rootView, id);
+      if (btnProxy == null) {
         break missingId;
       }
 
@@ -92,8 +113,8 @@ public final class ItemAppBinding implements ViewBinding {
         break missingId;
       }
 
-      return new ItemAppBinding((MaterialCardView) rootView, switchBlock, tvAppName, tvPackageName,
-          tvStatus);
+      return new ItemAppBinding((MaterialCardView) rootView, btnAllow, btnBlock, btnProxy,
+          tvAppName, tvPackageName, tvStatus);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

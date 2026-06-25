@@ -12,7 +12,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.button.MaterialButton;
 import com.zhuogui.firewall.R;
 import java.lang.NullPointerException;
 import java.lang.Override;
@@ -23,7 +23,7 @@ public final class ActivityMainBinding implements ViewBinding {
   private final CoordinatorLayout rootView;
 
   @NonNull
-  public final FloatingActionButton fabVpn;
+  public final MaterialButton btnToggleVpn;
 
   @NonNull
   public final FrameLayout fragmentContainer;
@@ -35,10 +35,10 @@ public final class ActivityMainBinding implements ViewBinding {
   public final TextView tvVpnStatus;
 
   private ActivityMainBinding(@NonNull CoordinatorLayout rootView,
-      @NonNull FloatingActionButton fabVpn, @NonNull FrameLayout fragmentContainer,
+      @NonNull MaterialButton btnToggleVpn, @NonNull FrameLayout fragmentContainer,
       @NonNull Toolbar toolbar, @NonNull TextView tvVpnStatus) {
     this.rootView = rootView;
-    this.fabVpn = fabVpn;
+    this.btnToggleVpn = btnToggleVpn;
     this.fragmentContainer = fragmentContainer;
     this.toolbar = toolbar;
     this.tvVpnStatus = tvVpnStatus;
@@ -71,9 +71,9 @@ public final class ActivityMainBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
-      id = R.id.fabVpn;
-      FloatingActionButton fabVpn = ViewBindings.findChildViewById(rootView, id);
-      if (fabVpn == null) {
+      id = R.id.btnToggleVpn;
+      MaterialButton btnToggleVpn = ViewBindings.findChildViewById(rootView, id);
+      if (btnToggleVpn == null) {
         break missingId;
       }
 
@@ -95,7 +95,7 @@ public final class ActivityMainBinding implements ViewBinding {
         break missingId;
       }
 
-      return new ActivityMainBinding((CoordinatorLayout) rootView, fabVpn, fragmentContainer,
+      return new ActivityMainBinding((CoordinatorLayout) rootView, btnToggleVpn, fragmentContainer,
           toolbar, tvVpnStatus);
     }
     String missingId = rootView.getResources().getResourceName(id);

@@ -1,3 +1,7 @@
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.TimeZone
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -13,7 +17,10 @@ android {
         minSdk = 26
         targetSdk = 34
         versionCode = 1
-        versionName = "1.0.0"
+        
+        val df = SimpleDateFormat("yyyy.MM.dd.HHmmss")
+        df.timeZone = TimeZone.getTimeZone("GMT+8")
+        versionName = df.format(Date())
     }
 
     signingConfigs {
@@ -33,6 +40,15 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+    }
+
+    applicationVariants.all {
+        val variant = this
+        variant.outputs.all {
+            val output = this as com.android.build.gradle.api.ApkVariantOutput
+            val formattedDate = variant.versionName
+            output.outputFileName = "zhuogui-firewall-${variant.name}-${formattedDate}.apk"
         }
     }
 

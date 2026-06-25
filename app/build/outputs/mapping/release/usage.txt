@@ -21016,6 +21016,7 @@ com.zhuogui.firewall.databinding.ItemConnectionBinding:
 com.zhuogui.firewall.databinding.ItemRuleBinding
 com.zhuogui.firewall.service.FirewallVpnService$Companion:
     public final kotlinx.coroutines.flow.StateFlow getLiveConnections()
+    public final void setServiceInstance(com.zhuogui.firewall.service.FirewallVpnService)
 com.zhuogui.firewall.service.FirewallVpnService:
     private static final java.lang.String CHANNEL_ID
     private static final int NOTIFICATION_ID
@@ -21028,6 +21029,7 @@ com.zhuogui.firewall.service.FirewallVpnService:
     private static final int VPN_MTU
     private static final java.lang.String VPN_ROUTE
     public static final synthetic kotlinx.coroutines.flow.StateFlow access$getLiveConnections$cp()
+    public static final synthetic void access$setServiceInstance$cp(com.zhuogui.firewall.service.FirewallVpnService)
 com.zhuogui.firewall.ui.MainViewModel$clearLogs$1
 com.zhuogui.firewall.ui.MainViewModel$deleteRule$1
 com.zhuogui.firewall.ui.MainViewModel$deleteRuleById$1
@@ -24465,7 +24467,6 @@ kotlin.jvm.internal.Ref$ByteRef
 kotlin.jvm.internal.Ref$CharRef
 kotlin.jvm.internal.Ref$DoubleRef
 kotlin.jvm.internal.Ref$FloatRef
-kotlin.jvm.internal.Ref$IntRef
 kotlin.jvm.internal.Ref$LongRef
 kotlin.jvm.internal.Ref$ShortRef
 kotlin.jvm.internal.Ref
@@ -29612,7 +29613,7 @@ androidx.appcompat.widget.TooltipCompatHandler
 androidx.appcompat.widget.TooltipPopup:
     public void <init>(android.content.Context)
     public static void computePosition()
-    public final android.widget.LinearLayout getRoot()
+    public static android.widget.LinearLayout getRoot()
     public static com.google.android.material.card.MaterialCardView getRoot()
     public final void hide()
     public final boolean isShowing()
@@ -36996,10 +36997,6 @@ com.google.android.material.tabs.TabIndicatorInterpolator
 com.google.android.material.tabs.TabLayout$$InternalSyntheticThrowCCEIfNotNull$248$b72ad72a68758d8eb7408a02a365379c314b90fd88cc75f6eb55de9fdaac5229$0
 com.google.android.material.tabs.TabLayout$1
 com.google.android.material.tabs.TabLayout$AdapterChangeListener
-com.google.android.material.tabs.TabLayout$BaseOnTabSelectedListener:
-    public abstract void onTabReselected()
-    public abstract void onTabSelected()
-    public abstract void onTabUnselected()
 com.google.android.material.tabs.TabLayout$PagerAdapterObserver
 com.google.android.material.tabs.TabLayout$SlidingTabIndicator:
     public int layoutDirection
@@ -37042,9 +37039,6 @@ com.google.android.material.tabs.TabLayout$TabView:
 com.google.android.material.tabs.TabLayout$ViewPagerOnTabSelectedListener$$InternalSyntheticThrowCCEIfNotNull$8$2db14a8e0ccca6f4c42e9e8ce7418d4dd93878b65ceafcee782f9a0d5b64d98f$0
 com.google.android.material.tabs.TabLayout$ViewPagerOnTabSelectedListener:
     public final synthetic int $r8$classId
-    public final void onTabReselected()
-    public final void onTabSelected()
-    public final void onTabUnselected()
 com.google.android.material.tabs.TabLayout:
     public static final int DEF_STYLE_RES
     public androidx.appcompat.app.ToolbarActionBar$ActionMenuPresenterCallback adapterChangeListener
@@ -37505,6 +37499,7 @@ com.zhuogui.firewall.data.dao.AppInfoDao_Impl$8
 com.zhuogui.firewall.data.dao.AppInfoDao_Impl:
     public final kotlinx.coroutines.flow.FlowKt__BuildersKt$flowOf$$inlined$unsafeFlow$2 getAllApps()
     public static java.lang.Object getByUid()
+    public static android.widget.LinearLayout getRoot()
     public final java.lang.Object insert(com.zhuogui.firewall.data.entity.AppInfo,com.zhuogui.firewall.data.repository.FirewallRepository$insertOrUpdateApp$1)
     public static java.lang.Object setAllAllowed()
     public static java.lang.Object setAllowed()
@@ -37626,9 +37621,9 @@ com.zhuogui.firewall.databinding.FragmentAppListBinding
 com.zhuogui.firewall.databinding.ItemAppBinding
 com.zhuogui.firewall.databinding.ItemConnectionBinding
 com.zhuogui.firewall.service.FirewallVpnService$Companion
-com.zhuogui.firewall.service.FirewallVpnService$onCreate$1:
+com.zhuogui.firewall.service.FirewallVpnService$logConnection$1:
     public final java.lang.Object invoke(kotlinx.coroutines.CoroutineScope,kotlin.coroutines.Continuation)
-com.zhuogui.firewall.service.FirewallVpnService$processPacket$2:
+com.zhuogui.firewall.service.FirewallVpnService$onCreate$1:
     public final java.lang.Object invoke(kotlinx.coroutines.CoroutineScope,kotlin.coroutines.Continuation)
 com.zhuogui.firewall.service.FirewallVpnService$readTunPackets$2:
     public final java.lang.Object invoke(kotlinx.coroutines.CoroutineScope,kotlin.coroutines.Continuation)
@@ -37760,11 +37755,11 @@ com.zhuogui.firewall.ui.apps.AppListFragment$onViewCreated$1
 com.zhuogui.firewall.ui.apps.AppListFragment$onViewCreated$2:
     public final java.lang.Integer invoke$1()
 com.zhuogui.firewall.ui.apps.AppListFragment$onViewCreated$3
-com.zhuogui.firewall.ui.apps.AppListFragment$onViewCreated$4$1:
+com.zhuogui.firewall.ui.apps.AppListFragment$onViewCreated$5$1:
     public static java.lang.Object emit$1()
-com.zhuogui.firewall.ui.apps.AppListFragment$onViewCreated$4:
-    public final java.lang.Object invoke(kotlinx.coroutines.CoroutineScope,kotlin.coroutines.Continuation)
 com.zhuogui.firewall.ui.apps.AppListFragment$onViewCreated$5:
+    public final java.lang.Object invoke(kotlinx.coroutines.CoroutineScope,kotlin.coroutines.Continuation)
+com.zhuogui.firewall.ui.apps.AppListFragment$onViewCreated$6:
     public final boolean onQueryTextChange()
     public final boolean onQueryTextSubmit()
 com.zhuogui.firewall.ui.apps.AppListFragment$onViewCreated$updateFilteredList$1:
@@ -37775,7 +37770,7 @@ com.zhuogui.firewall.ui.apps.AppListFragment$special$$inlined$viewModels$default
 com.zhuogui.firewall.ui.apps.AppListFragment$special$$inlined$viewModels$default$4
 com.zhuogui.firewall.ui.apps.AppListFragment$viewModel$2
 com.zhuogui.firewall.ui.apps.AppListFragment:
-    public static androidx.appcompat.widget.TooltipPopup getBinding()
+    public static com.zhuogui.firewall.data.dao.AppInfoDao_Impl getBinding()
     public static void navigateToDetail()
 com.zhuogui.firewall.util.AppInfoHelper$getInstalledApps$$inlined$sortedBy$1
 com.zhuogui.firewall.util.AppInfoHelper

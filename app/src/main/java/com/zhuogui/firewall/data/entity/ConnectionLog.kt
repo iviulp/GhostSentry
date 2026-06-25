@@ -24,6 +24,8 @@ data class ConnectionLog(
     val protocol: String,
     /** 是否被阻止 */
     val blocked: Boolean = false,
+    /** 连接状态: SUCCESS, FAILED, TIMEOUT, BLOCKED */
+    val status: String = "SUCCESS",
     /** 时间戳 */
     val timestamp: Long = System.currentTimeMillis()
 )

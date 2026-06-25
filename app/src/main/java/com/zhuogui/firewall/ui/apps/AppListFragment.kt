@@ -52,9 +52,10 @@ class AppListFragment : Fragment() {
 
         var allAppsList = emptyList<com.zhuogui.firewall.data.entity.AppInfo>()
         var searchQuery = ""
+        var activeFilterTab = 0 // 0 = 全部, 1 = 已允许, 2 = 已阻止
 
         val updateFilteredList = {
-            val filtered = if (searchQuery.isEmpty()) {
+            var filtered = if (searchQuery.isEmpty()) {
                 allAppsList
             } else {
                 allAppsList.filter {
@@ -62,9 +63,26 @@ class AppListFragment : Fragment() {
                     it.packageName.contains(searchQuery, ignoreCase = true)
                 }
             }
+
+            // 根据 Tab 再次过滤：1 = 已允许, 2 = 已阻止
+            filtered = when (activeFilterTab) {
+                1 -> filtered.filter { it.allowed != false }
+                2 -> filtered.filter { it.allowed == false }
+                else -> filtered
+            }
+
             adapter.submitList(filtered)
             binding.tvEmpty.visibility = if (filtered.isEmpty()) View.VISIBLE else View.GONE
         }
+
+        binding.tabLayoutFilter.addOnTabSelectedListener(object : com.google.android.material.tabs.TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: com.google.android.material.tabs.TabLayout.Tab) {
+                activeFilterTab = tab.position
+                updateFilteredList()
+            }
+            override fun onTabUnselected(tab: com.google.android.material.tabs.TabLayout.Tab) {}
+            override fun onTabReselected(tab: com.google.android.material.tabs.TabLayout.Tab) {}
+        })
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.allApps.collect { apps ->

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -14,9 +15,38 @@
         android:iconifiedByDefault="false"
         android:queryHint="搜索已安装应用 (名称/包名)" />
 
+    <!-- Tab 选项卡过滤 -->
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayoutFilter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:tabGravity="fill"
+        app:tabMode="fixed"
+        app:tabTextColor="#757575"
+        app:tabSelectedTextColor="#1A73E8"
+        app:tabIndicatorColor="#1A73E8"
+        android:layout_marginBottom="8dp"
+        android:background="#FFFFFF">
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="全部" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="已允许" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="已阻止" />
+
+    </com.google.android.material.tabs.TabLayout>
+
     <!-- 一键全部阻止/允许 -->
     <LinearLayout
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"

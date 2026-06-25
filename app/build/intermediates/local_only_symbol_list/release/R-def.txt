@@ -35,6 +35,7 @@ id searchView
 id swipeRefresh
 id switchBlocked
 id tabLayout
+id tabLayoutFilter
 id toolbar
 id tvAppName
 id tvCount

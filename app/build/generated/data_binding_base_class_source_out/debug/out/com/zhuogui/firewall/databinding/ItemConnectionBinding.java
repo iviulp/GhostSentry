@@ -4,13 +4,13 @@ package com.zhuogui.firewall.databinding;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
+import com.google.android.material.button.MaterialButton;
 import com.zhuogui.firewall.R;
 import java.lang.NullPointerException;
 import java.lang.Override;
@@ -21,7 +21,7 @@ public final class ItemConnectionBinding implements ViewBinding {
   private final LinearLayout rootView;
 
   @NonNull
-  public final Button btnBlock;
+  public final MaterialButton btnBlock;
 
   @NonNull
   public final TextView tvAppName;
@@ -38,7 +38,7 @@ public final class ItemConnectionBinding implements ViewBinding {
   @NonNull
   public final TextView tvTime;
 
-  private ItemConnectionBinding(@NonNull LinearLayout rootView, @NonNull Button btnBlock,
+  private ItemConnectionBinding(@NonNull LinearLayout rootView, @NonNull MaterialButton btnBlock,
       @NonNull TextView tvAppName, @NonNull TextView tvPackage, @NonNull TextView tvProtocol,
       @NonNull TextView tvTarget, @NonNull TextView tvTime) {
     this.rootView = rootView;
@@ -78,7 +78,7 @@ public final class ItemConnectionBinding implements ViewBinding {
     int id;
     missingId: {
       id = R.id.btnBlock;
-      Button btnBlock = ViewBindings.findChildViewById(rootView, id);
+      MaterialButton btnBlock = ViewBindings.findChildViewById(rootView, id);
       if (btnBlock == null) {
         break missingId;
       }

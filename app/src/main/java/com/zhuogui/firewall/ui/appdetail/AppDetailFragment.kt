@@ -133,8 +133,14 @@ class AppDetailFragment : Fragment() {
                 _sortMode,
                 _activeTab
             ) { logs, mode, dedup, sort, activeTab ->
-                // 根据选项卡过滤数据：0为已允许(blocked=false)，1为已阻止(blocked=true)
-                val filteredByTab = logs.filter { it.blocked == (activeTab == 1) }
+                // 根据选项卡过滤数据：0为已允许/失败/超时，1为被阻止(BLOCKED)
+                val filteredByTab = logs.filter { 
+                    if (activeTab == 1) {
+                        it.blocked || it.status == "BLOCKED"
+                    } else {
+                        !it.blocked && it.status != "BLOCKED"
+                    }
+                }
 
                 val processed = if (dedup) {
                     filteredByTab.distinctBy { it.destDomain ?: it.destIp }

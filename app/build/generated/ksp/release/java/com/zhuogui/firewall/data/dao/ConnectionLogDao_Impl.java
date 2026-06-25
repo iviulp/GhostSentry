@@ -43,7 +43,7 @@ public final class ConnectionLogDao_Impl implements ConnectionLogDao {
       @Override
       @NonNull
       protected String createQuery() {
-        return "INSERT OR REPLACE INTO `connection_logs` (`id`,`packageName`,`appName`,`destIp`,`destPort`,`destDomain`,`protocol`,`blocked`,`timestamp`) VALUES (nullif(?, 0),?,?,?,?,?,?,?,?)";
+        return "INSERT OR REPLACE INTO `connection_logs` (`id`,`packageName`,`appName`,`destIp`,`destPort`,`destDomain`,`protocol`,`blocked`,`status`,`timestamp`) VALUES (nullif(?, 0),?,?,?,?,?,?,?,?,?)";
       }
 
       @Override
@@ -62,7 +62,8 @@ public final class ConnectionLogDao_Impl implements ConnectionLogDao {
         statement.bindString(7, entity.getProtocol());
         final int _tmp = entity.getBlocked() ? 1 : 0;
         statement.bindLong(8, _tmp);
-        statement.bindLong(9, entity.getTimestamp());
+        statement.bindString(9, entity.getStatus());
+        statement.bindLong(10, entity.getTimestamp());
       }
     };
     this.__preparedStmtOfDeleteOlderThan = new SharedSQLiteStatement(__db) {
@@ -167,6 +168,7 @@ public final class ConnectionLogDao_Impl implements ConnectionLogDao {
           final int _cursorIndexOfDestDomain = CursorUtil.getColumnIndexOrThrow(_cursor, "destDomain");
           final int _cursorIndexOfProtocol = CursorUtil.getColumnIndexOrThrow(_cursor, "protocol");
           final int _cursorIndexOfBlocked = CursorUtil.getColumnIndexOrThrow(_cursor, "blocked");
+          final int _cursorIndexOfStatus = CursorUtil.getColumnIndexOrThrow(_cursor, "status");
           final int _cursorIndexOfTimestamp = CursorUtil.getColumnIndexOrThrow(_cursor, "timestamp");
           final List<ConnectionLog> _result = new ArrayList<ConnectionLog>(_cursor.getCount());
           while (_cursor.moveToNext()) {
@@ -193,9 +195,11 @@ public final class ConnectionLogDao_Impl implements ConnectionLogDao {
             final int _tmp;
             _tmp = _cursor.getInt(_cursorIndexOfBlocked);
             _tmpBlocked = _tmp != 0;
+            final String _tmpStatus;
+            _tmpStatus = _cursor.getString(_cursorIndexOfStatus);
             final long _tmpTimestamp;
             _tmpTimestamp = _cursor.getLong(_cursorIndexOfTimestamp);
-            _item = new ConnectionLog(_tmpId,_tmpPackageName,_tmpAppName,_tmpDestIp,_tmpDestPort,_tmpDestDomain,_tmpProtocol,_tmpBlocked,_tmpTimestamp);
+            _item = new ConnectionLog(_tmpId,_tmpPackageName,_tmpAppName,_tmpDestIp,_tmpDestPort,_tmpDestDomain,_tmpProtocol,_tmpBlocked,_tmpStatus,_tmpTimestamp);
             _result.add(_item);
           }
           return _result;
@@ -231,6 +235,7 @@ public final class ConnectionLogDao_Impl implements ConnectionLogDao {
           final int _cursorIndexOfDestDomain = CursorUtil.getColumnIndexOrThrow(_cursor, "destDomain");
           final int _cursorIndexOfProtocol = CursorUtil.getColumnIndexOrThrow(_cursor, "protocol");
           final int _cursorIndexOfBlocked = CursorUtil.getColumnIndexOrThrow(_cursor, "blocked");
+          final int _cursorIndexOfStatus = CursorUtil.getColumnIndexOrThrow(_cursor, "status");
           final int _cursorIndexOfTimestamp = CursorUtil.getColumnIndexOrThrow(_cursor, "timestamp");
           final List<ConnectionLog> _result = new ArrayList<ConnectionLog>(_cursor.getCount());
           while (_cursor.moveToNext()) {
@@ -257,9 +262,11 @@ public final class ConnectionLogDao_Impl implements ConnectionLogDao {
             final int _tmp;
             _tmp = _cursor.getInt(_cursorIndexOfBlocked);
             _tmpBlocked = _tmp != 0;
+            final String _tmpStatus;
+            _tmpStatus = _cursor.getString(_cursorIndexOfStatus);
             final long _tmpTimestamp;
             _tmpTimestamp = _cursor.getLong(_cursorIndexOfTimestamp);
-            _item = new ConnectionLog(_tmpId,_tmpPackageName,_tmpAppName,_tmpDestIp,_tmpDestPort,_tmpDestDomain,_tmpProtocol,_tmpBlocked,_tmpTimestamp);
+            _item = new ConnectionLog(_tmpId,_tmpPackageName,_tmpAppName,_tmpDestIp,_tmpDestPort,_tmpDestDomain,_tmpProtocol,_tmpBlocked,_tmpStatus,_tmpTimestamp);
             _result.add(_item);
           }
           return _result;
