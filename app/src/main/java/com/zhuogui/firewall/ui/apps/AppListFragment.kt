@@ -41,6 +41,9 @@ class AppListFragment : Fragment() {
             },
             onToggleBlock = { app, blocked ->
                 viewModel.setAppAllowed(app.packageName, if (blocked) false else null)
+            },
+            onToggleProxy = { app, useProxy ->
+                viewModel.setAppUseProxy(app.packageName, useProxy)
             }
         )
 

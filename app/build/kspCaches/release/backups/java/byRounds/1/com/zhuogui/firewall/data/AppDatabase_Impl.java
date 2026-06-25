@@ -41,14 +41,14 @@ public final class AppDatabase_Impl extends AppDatabase {
   @Override
   @NonNull
   protected SupportSQLiteOpenHelper createOpenHelper(@NonNull final DatabaseConfiguration config) {
-    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(1) {
+    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(2) {
       @Override
       public void createAllTables(@NonNull final SupportSQLiteDatabase db) {
-        db.execSQL("CREATE TABLE IF NOT EXISTS `app_info` (`packageName` TEXT NOT NULL, `appName` TEXT NOT NULL, `uid` INTEGER NOT NULL, `allowed` INTEGER, `wifiAllowed` INTEGER, `mobileAllowed` INTEGER, `lastSeen` INTEGER NOT NULL, PRIMARY KEY(`packageName`))");
+        db.execSQL("CREATE TABLE IF NOT EXISTS `app_info` (`packageName` TEXT NOT NULL, `appName` TEXT NOT NULL, `uid` INTEGER NOT NULL, `allowed` INTEGER, `wifiAllowed` INTEGER, `mobileAllowed` INTEGER, `useProxy` INTEGER NOT NULL, `lastSeen` INTEGER NOT NULL, PRIMARY KEY(`packageName`))");
         db.execSQL("CREATE TABLE IF NOT EXISTS `firewall_rules` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `packageName` TEXT NOT NULL, `target` TEXT NOT NULL, `blocked` INTEGER NOT NULL, `type` TEXT NOT NULL, `createdAt` INTEGER NOT NULL)");
         db.execSQL("CREATE TABLE IF NOT EXISTS `connection_logs` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `packageName` TEXT NOT NULL, `appName` TEXT NOT NULL, `destIp` TEXT NOT NULL, `destPort` INTEGER NOT NULL, `destDomain` TEXT, `protocol` TEXT NOT NULL, `blocked` INTEGER NOT NULL, `timestamp` INTEGER NOT NULL)");
         db.execSQL("CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)");
-        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '1002c40fc5a88f932ddd51aba76a89a0')");
+        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '590ef6e3349b50836eca91036a6093a7')");
       }
 
       @Override
@@ -99,13 +99,14 @@ public final class AppDatabase_Impl extends AppDatabase {
       @NonNull
       public RoomOpenHelper.ValidationResult onValidateSchema(
           @NonNull final SupportSQLiteDatabase db) {
-        final HashMap<String, TableInfo.Column> _columnsAppInfo = new HashMap<String, TableInfo.Column>(7);
+        final HashMap<String, TableInfo.Column> _columnsAppInfo = new HashMap<String, TableInfo.Column>(8);
         _columnsAppInfo.put("packageName", new TableInfo.Column("packageName", "TEXT", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsAppInfo.put("appName", new TableInfo.Column("appName", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsAppInfo.put("uid", new TableInfo.Column("uid", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsAppInfo.put("allowed", new TableInfo.Column("allowed", "INTEGER", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsAppInfo.put("wifiAllowed", new TableInfo.Column("wifiAllowed", "INTEGER", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsAppInfo.put("mobileAllowed", new TableInfo.Column("mobileAllowed", "INTEGER", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsAppInfo.put("useProxy", new TableInfo.Column("useProxy", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsAppInfo.put("lastSeen", new TableInfo.Column("lastSeen", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         final HashSet<TableInfo.ForeignKey> _foreignKeysAppInfo = new HashSet<TableInfo.ForeignKey>(0);
         final HashSet<TableInfo.Index> _indicesAppInfo = new HashSet<TableInfo.Index>(0);
@@ -153,7 +154,7 @@ public final class AppDatabase_Impl extends AppDatabase {
         }
         return new RoomOpenHelper.ValidationResult(true, null);
       }
-    }, "1002c40fc5a88f932ddd51aba76a89a0", "244d6d04b0fbe162293a9e1c64db8727");
+    }, "590ef6e3349b50836eca91036a6093a7", "b2537b4f5736e8531b627215b5c515c9");
     final SupportSQLiteOpenHelper.Configuration _sqliteConfig = SupportSQLiteOpenHelper.Configuration.builder(config.context).name(config.name).callback(_openCallback).build();
     final SupportSQLiteOpenHelper _helper = config.sqliteOpenHelperFactory.create(_sqliteConfig);
     return _helper;

@@ -10,7 +10,8 @@ import com.zhuogui.firewall.databinding.ItemAppBinding
 
 class AppAdapter(
     private val onAppClick: (AppInfo) -> Unit,
-    private val onToggleBlock: (AppInfo, Boolean) -> Unit
+    private val onToggleBlock: (AppInfo, Boolean) -> Unit,
+    private val onToggleProxy: (AppInfo, Boolean) -> Unit
 ) : ListAdapter<AppInfo, AppAdapter.AppViewHolder>(AppDiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AppViewHolder {
@@ -50,6 +51,8 @@ class AppAdapter(
                 binding.btnBlock.strokeColor = android.content.res.ColorStateList.valueOf(redColor)
                 binding.btnBlock.setTextColor(redColor)
                 binding.btnBlock.backgroundTintList = android.content.res.ColorStateList.valueOf(lightRed)
+
+                binding.btnProxy.visibility = android.view.View.GONE
             } else {
                 // 允许按钮：绿底绿字
                 binding.btnAllow.strokeColor = android.content.res.ColorStateList.valueOf(greenColor)
@@ -60,6 +63,26 @@ class AppAdapter(
                 binding.btnBlock.strokeColor = android.content.res.ColorStateList.valueOf(lightGray)
                 binding.btnBlock.setTextColor(grayColor)
                 binding.btnBlock.backgroundTintList = android.content.res.ColorStateList.valueOf(0x00000000)
+
+                binding.btnProxy.visibility = android.view.View.VISIBLE
+
+                // 代理/直连切换按钮的样式绑定
+                val blueColor = 0xFF2196F3.toInt()
+                val lightBlue = 0xFFE3F2FD.toInt()
+                val orangeColor = 0xFFFF9800.toInt()
+                val lightOrange = 0xFFFFF3E0.toInt()
+
+                if (app.useProxy) {
+                    binding.btnProxy.text = "代理"
+                    binding.btnProxy.strokeColor = android.content.res.ColorStateList.valueOf(blueColor)
+                    binding.btnProxy.setTextColor(blueColor)
+                    binding.btnProxy.backgroundTintList = android.content.res.ColorStateList.valueOf(lightBlue)
+                } else {
+                    binding.btnProxy.text = "直连"
+                    binding.btnProxy.strokeColor = android.content.res.ColorStateList.valueOf(orangeColor)
+                    binding.btnProxy.setTextColor(orangeColor)
+                    binding.btnProxy.backgroundTintList = android.content.res.ColorStateList.valueOf(lightOrange)
+                }
             }
 
             binding.btnAllow.setOnClickListener {
@@ -67,6 +90,9 @@ class AppAdapter(
             }
             binding.btnBlock.setOnClickListener {
                 onToggleBlock(app, true)
+            }
+            binding.btnProxy.setOnClickListener {
+                onToggleProxy(app, !app.useProxy)
             }
 
             binding.root.setOnClickListener {

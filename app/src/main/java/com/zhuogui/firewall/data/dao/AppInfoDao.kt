@@ -31,6 +31,9 @@ interface AppInfoDao {
     @Query("UPDATE app_info SET wifiAllowed = :w, mobileAllowed = :m WHERE packageName = :pkg")
     suspend fun setNetworkType(pkg: String, w: Boolean?, m: Boolean?)
 
+    @Query("UPDATE app_info SET useProxy = :useProxy WHERE packageName = :pkg")
+    suspend fun setUseProxy(pkg: String, useProxy: Boolean)
+
     @Delete
     suspend fun delete(app: AppInfo)
 }

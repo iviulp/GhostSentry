@@ -16,6 +16,7 @@ id btnBlock
 id btnBlockAll
 id btnClear
 id btnDelete
+id btnProxy
 id btnToggleVpn
 id chipAll
 id chipDeduplicate

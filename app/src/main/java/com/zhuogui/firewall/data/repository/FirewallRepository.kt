@@ -15,10 +15,26 @@ class FirewallRepository(private val db: AppDatabase) {
 
     suspend fun getAppByPackage(pkg: String): AppInfo? = db.appInfoDao().getByPackage(pkg)
 
-    suspend fun insertOrUpdateApp(app: AppInfo) = db.appInfoDao().insert(app)
+    suspend fun insertOrUpdateApp(app: AppInfo) {
+        val existing = db.appInfoDao().getByPackage(app.packageName)
+        if (existing == null) {
+            db.appInfoDao().insert(app)
+        } else {
+            // 关键修复：合并更新时必须拷贝保留用户的允许/封锁联网配置与代理配置，否则每次启动应用都会被重置
+            db.appInfoDao().insert(app.copy(
+                allowed = existing.allowed,
+                wifiAllowed = existing.wifiAllowed,
+                mobileAllowed = existing.mobileAllowed,
+                useProxy = existing.useProxy
+            ))
+        }
+    }
 
     suspend fun setAppAllowed(pkg: String, allowed: Boolean?) =
         db.appInfoDao().setAllowed(pkg, allowed)
+
+    suspend fun setAppUseProxy(pkg: String, useProxy: Boolean) =
+        db.appInfoDao().setUseProxy(pkg, useProxy)
 
     suspend fun setAllAppsAllowed(allowed: Boolean?) =
         db.appInfoDao().setAllAllowed(allowed)

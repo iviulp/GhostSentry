@@ -48,13 +48,15 @@ public final class AppInfoDao_Impl implements AppInfoDao {
 
   private final SharedSQLiteStatement __preparedStmtOfSetNetworkType;
 
+  private final SharedSQLiteStatement __preparedStmtOfSetUseProxy;
+
   public AppInfoDao_Impl(@NonNull final RoomDatabase __db) {
     this.__db = __db;
     this.__insertionAdapterOfAppInfo = new EntityInsertionAdapter<AppInfo>(__db) {
       @Override
       @NonNull
       protected String createQuery() {
-        return "INSERT OR REPLACE INTO `app_info` (`packageName`,`appName`,`uid`,`allowed`,`wifiAllowed`,`mobileAllowed`,`lastSeen`) VALUES (?,?,?,?,?,?,?)";
+        return "INSERT OR REPLACE INTO `app_info` (`packageName`,`appName`,`uid`,`allowed`,`wifiAllowed`,`mobileAllowed`,`useProxy`,`lastSeen`) VALUES (?,?,?,?,?,?,?,?)";
       }
 
       @Override
@@ -81,7 +83,9 @@ public final class AppInfoDao_Impl implements AppInfoDao {
         } else {
           statement.bindLong(6, _tmp_2);
         }
-        statement.bindLong(7, entity.getLastSeen());
+        final int _tmp_3 = entity.getUseProxy() ? 1 : 0;
+        statement.bindLong(7, _tmp_3);
+        statement.bindLong(8, entity.getLastSeen());
       }
     };
     this.__deletionAdapterOfAppInfo = new EntityDeletionOrUpdateAdapter<AppInfo>(__db) {
@@ -101,7 +105,7 @@ public final class AppInfoDao_Impl implements AppInfoDao {
       @Override
       @NonNull
       protected String createQuery() {
-        return "UPDATE OR ABORT `app_info` SET `packageName` = ?,`appName` = ?,`uid` = ?,`allowed` = ?,`wifiAllowed` = ?,`mobileAllowed` = ?,`lastSeen` = ? WHERE `packageName` = ?";
+        return "UPDATE OR ABORT `app_info` SET `packageName` = ?,`appName` = ?,`uid` = ?,`allowed` = ?,`wifiAllowed` = ?,`mobileAllowed` = ?,`useProxy` = ?,`lastSeen` = ? WHERE `packageName` = ?";
       }
 
       @Override
@@ -128,8 +132,10 @@ public final class AppInfoDao_Impl implements AppInfoDao {
         } else {
           statement.bindLong(6, _tmp_2);
         }
-        statement.bindLong(7, entity.getLastSeen());
-        statement.bindString(8, entity.getPackageName());
+        final int _tmp_3 = entity.getUseProxy() ? 1 : 0;
+        statement.bindLong(7, _tmp_3);
+        statement.bindLong(8, entity.getLastSeen());
+        statement.bindString(9, entity.getPackageName());
       }
     };
     this.__preparedStmtOfSetAllowed = new SharedSQLiteStatement(__db) {
@@ -153,6 +159,14 @@ public final class AppInfoDao_Impl implements AppInfoDao {
       @NonNull
       public String createQuery() {
         final String _query = "UPDATE app_info SET wifiAllowed = ?, mobileAllowed = ? WHERE packageName = ?";
+        return _query;
+      }
+    };
+    this.__preparedStmtOfSetUseProxy = new SharedSQLiteStatement(__db) {
+      @Override
+      @NonNull
+      public String createQuery() {
+        final String _query = "UPDATE app_info SET useProxy = ? WHERE packageName = ?";
         return _query;
       }
     };
@@ -316,6 +330,35 @@ public final class AppInfoDao_Impl implements AppInfoDao {
   }
 
   @Override
+  public Object setUseProxy(final String pkg, final boolean useProxy,
+      final Continuation<? super Unit> $completion) {
+    return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
+      @Override
+      @NonNull
+      public Unit call() throws Exception {
+        final SupportSQLiteStatement _stmt = __preparedStmtOfSetUseProxy.acquire();
+        int _argIndex = 1;
+        final int _tmp = useProxy ? 1 : 0;
+        _stmt.bindLong(_argIndex, _tmp);
+        _argIndex = 2;
+        _stmt.bindString(_argIndex, pkg);
+        try {
+          __db.beginTransaction();
+          try {
+            _stmt.executeUpdateDelete();
+            __db.setTransactionSuccessful();
+            return Unit.INSTANCE;
+          } finally {
+            __db.endTransaction();
+          }
+        } finally {
+          __preparedStmtOfSetUseProxy.release(_stmt);
+        }
+      }
+    }, $completion);
+  }
+
+  @Override
   public Flow<List<AppInfo>> getAllApps() {
     final String _sql = "SELECT * FROM app_info ORDER BY appName ASC";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 0);
@@ -331,6 +374,7 @@ public final class AppInfoDao_Impl implements AppInfoDao {
           final int _cursorIndexOfAllowed = CursorUtil.getColumnIndexOrThrow(_cursor, "allowed");
           final int _cursorIndexOfWifiAllowed = CursorUtil.getColumnIndexOrThrow(_cursor, "wifiAllowed");
           final int _cursorIndexOfMobileAllowed = CursorUtil.getColumnIndexOrThrow(_cursor, "mobileAllowed");
+          final int _cursorIndexOfUseProxy = CursorUtil.getColumnIndexOrThrow(_cursor, "useProxy");
           final int _cursorIndexOfLastSeen = CursorUtil.getColumnIndexOrThrow(_cursor, "lastSeen");
           final List<AppInfo> _result = new ArrayList<AppInfo>(_cursor.getCount());
           while (_cursor.moveToNext()) {
@@ -365,9 +409,13 @@ public final class AppInfoDao_Impl implements AppInfoDao {
               _tmp_2 = _cursor.getInt(_cursorIndexOfMobileAllowed);
             }
             _tmpMobileAllowed = _tmp_2 == null ? null : _tmp_2 != 0;
+            final boolean _tmpUseProxy;
+            final int _tmp_3;
+            _tmp_3 = _cursor.getInt(_cursorIndexOfUseProxy);
+            _tmpUseProxy = _tmp_3 != 0;
             final long _tmpLastSeen;
             _tmpLastSeen = _cursor.getLong(_cursorIndexOfLastSeen);
-            _item = new AppInfo(_tmpPackageName,_tmpAppName,_tmpUid,_tmpAllowed,_tmpWifiAllowed,_tmpMobileAllowed,_tmpLastSeen);
+            _item = new AppInfo(_tmpPackageName,_tmpAppName,_tmpUid,_tmpAllowed,_tmpWifiAllowed,_tmpMobileAllowed,_tmpUseProxy,_tmpLastSeen);
             _result.add(_item);
           }
           return _result;
@@ -402,6 +450,7 @@ public final class AppInfoDao_Impl implements AppInfoDao {
           final int _cursorIndexOfAllowed = CursorUtil.getColumnIndexOrThrow(_cursor, "allowed");
           final int _cursorIndexOfWifiAllowed = CursorUtil.getColumnIndexOrThrow(_cursor, "wifiAllowed");
           final int _cursorIndexOfMobileAllowed = CursorUtil.getColumnIndexOrThrow(_cursor, "mobileAllowed");
+          final int _cursorIndexOfUseProxy = CursorUtil.getColumnIndexOrThrow(_cursor, "useProxy");
           final int _cursorIndexOfLastSeen = CursorUtil.getColumnIndexOrThrow(_cursor, "lastSeen");
           final AppInfo _result;
           if (_cursor.moveToFirst()) {
@@ -435,9 +484,13 @@ public final class AppInfoDao_Impl implements AppInfoDao {
               _tmp_2 = _cursor.getInt(_cursorIndexOfMobileAllowed);
             }
             _tmpMobileAllowed = _tmp_2 == null ? null : _tmp_2 != 0;
+            final boolean _tmpUseProxy;
+            final int _tmp_3;
+            _tmp_3 = _cursor.getInt(_cursorIndexOfUseProxy);
+            _tmpUseProxy = _tmp_3 != 0;
             final long _tmpLastSeen;
             _tmpLastSeen = _cursor.getLong(_cursorIndexOfLastSeen);
-            _result = new AppInfo(_tmpPackageName,_tmpAppName,_tmpUid,_tmpAllowed,_tmpWifiAllowed,_tmpMobileAllowed,_tmpLastSeen);
+            _result = new AppInfo(_tmpPackageName,_tmpAppName,_tmpUid,_tmpAllowed,_tmpWifiAllowed,_tmpMobileAllowed,_tmpUseProxy,_tmpLastSeen);
           } else {
             _result = null;
           }
@@ -469,6 +522,7 @@ public final class AppInfoDao_Impl implements AppInfoDao {
           final int _cursorIndexOfAllowed = CursorUtil.getColumnIndexOrThrow(_cursor, "allowed");
           final int _cursorIndexOfWifiAllowed = CursorUtil.getColumnIndexOrThrow(_cursor, "wifiAllowed");
           final int _cursorIndexOfMobileAllowed = CursorUtil.getColumnIndexOrThrow(_cursor, "mobileAllowed");
+          final int _cursorIndexOfUseProxy = CursorUtil.getColumnIndexOrThrow(_cursor, "useProxy");
           final int _cursorIndexOfLastSeen = CursorUtil.getColumnIndexOrThrow(_cursor, "lastSeen");
           final AppInfo _result;
           if (_cursor.moveToFirst()) {
@@ -502,9 +556,13 @@ public final class AppInfoDao_Impl implements AppInfoDao {
               _tmp_2 = _cursor.getInt(_cursorIndexOfMobileAllowed);
             }
             _tmpMobileAllowed = _tmp_2 == null ? null : _tmp_2 != 0;
+            final boolean _tmpUseProxy;
+            final int _tmp_3;
+            _tmp_3 = _cursor.getInt(_cursorIndexOfUseProxy);
+            _tmpUseProxy = _tmp_3 != 0;
             final long _tmpLastSeen;
             _tmpLastSeen = _cursor.getLong(_cursorIndexOfLastSeen);
-            _result = new AppInfo(_tmpPackageName,_tmpAppName,_tmpUid,_tmpAllowed,_tmpWifiAllowed,_tmpMobileAllowed,_tmpLastSeen);
+            _result = new AppInfo(_tmpPackageName,_tmpAppName,_tmpUid,_tmpAllowed,_tmpWifiAllowed,_tmpMobileAllowed,_tmpUseProxy,_tmpLastSeen);
           } else {
             _result = null;
           }

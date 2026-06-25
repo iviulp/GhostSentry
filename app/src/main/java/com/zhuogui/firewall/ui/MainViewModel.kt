@@ -66,6 +66,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun setAppUseProxy(pkg: String, useProxy: Boolean) {
+        viewModelScope.launch {
+            repository.setAppUseProxy(pkg, useProxy)
+            notifyVpnReload()
+        }
+    }
+
     fun setAllAppsAllowed(allowed: Boolean?) {
         viewModelScope.launch {
             repository.setAllAppsAllowed(allowed)

@@ -13,7 +13,7 @@ import com.zhuogui.firewall.data.entity.FirewallRule
 
 @Database(
     entities = [AppInfo::class, FirewallRule::class, ConnectionLog::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {

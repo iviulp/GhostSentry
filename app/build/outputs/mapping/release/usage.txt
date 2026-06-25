@@ -1401,7 +1401,6 @@ androidx.appcompat.app.AlertDialog$Builder:
     public androidx.appcompat.app.AlertDialog$Builder setIconAttribute(int)
     public androidx.appcompat.app.AlertDialog$Builder setInverseBackgroundForced(boolean)
     public androidx.appcompat.app.AlertDialog$Builder setItems(int,android.content.DialogInterface$OnClickListener)
-    public androidx.appcompat.app.AlertDialog$Builder setItems(java.lang.CharSequence[],android.content.DialogInterface$OnClickListener)
     public androidx.appcompat.app.AlertDialog$Builder setMessage(int)
     public androidx.appcompat.app.AlertDialog$Builder setMultiChoiceItems(int,boolean[],android.content.DialogInterface$OnMultiChoiceClickListener)
     public androidx.appcompat.app.AlertDialog$Builder setMultiChoiceItems(android.database.Cursor,java.lang.String,java.lang.String,android.content.DialogInterface$OnMultiChoiceClickListener)
@@ -1409,7 +1408,6 @@ androidx.appcompat.app.AlertDialog$Builder:
     public androidx.appcompat.app.AlertDialog$Builder setNegativeButton(int,android.content.DialogInterface$OnClickListener)
     public androidx.appcompat.app.AlertDialog$Builder setNegativeButtonIcon(android.graphics.drawable.Drawable)
     public androidx.appcompat.app.AlertDialog$Builder setNeutralButton(int,android.content.DialogInterface$OnClickListener)
-    public androidx.appcompat.app.AlertDialog$Builder setNeutralButton(java.lang.CharSequence,android.content.DialogInterface$OnClickListener)
     public androidx.appcompat.app.AlertDialog$Builder setNeutralButtonIcon(android.graphics.drawable.Drawable)
     public androidx.appcompat.app.AlertDialog$Builder setOnCancelListener(android.content.DialogInterface$OnCancelListener)
     public androidx.appcompat.app.AlertDialog$Builder setOnDismissListener(android.content.DialogInterface$OnDismissListener)
@@ -13183,7 +13181,6 @@ com.google.android.material.R$attr:
     public static int materialAlertDialogTitleIconStyle
     public static int materialAlertDialogTitlePanelStyle
     public static int materialAlertDialogTitleTextStyle
-    public static int materialButtonOutlinedStyle
     public static int materialCalendarDay
     public static int materialCalendarDayOfWeekLabel
     public static int materialCalendarFullscreenTheme
@@ -19368,7 +19365,6 @@ com.google.android.material.dialog.MaterialAlertDialogBuilder:
     public synthetic bridge androidx.appcompat.app.AlertDialog$Builder setItems(int,android.content.DialogInterface$OnClickListener)
     public synthetic bridge androidx.appcompat.app.AlertDialog$Builder setItems(java.lang.CharSequence[],android.content.DialogInterface$OnClickListener)
     public com.google.android.material.dialog.MaterialAlertDialogBuilder setItems(int,android.content.DialogInterface$OnClickListener)
-    public com.google.android.material.dialog.MaterialAlertDialogBuilder setItems(java.lang.CharSequence[],android.content.DialogInterface$OnClickListener)
     public synthetic bridge androidx.appcompat.app.AlertDialog$Builder setMessage(int)
     public synthetic bridge androidx.appcompat.app.AlertDialog$Builder setMessage(java.lang.CharSequence)
     public com.google.android.material.dialog.MaterialAlertDialogBuilder setMessage(int)
@@ -19386,7 +19382,6 @@ com.google.android.material.dialog.MaterialAlertDialogBuilder:
     public synthetic bridge androidx.appcompat.app.AlertDialog$Builder setNeutralButton(int,android.content.DialogInterface$OnClickListener)
     public synthetic bridge androidx.appcompat.app.AlertDialog$Builder setNeutralButton(java.lang.CharSequence,android.content.DialogInterface$OnClickListener)
     public com.google.android.material.dialog.MaterialAlertDialogBuilder setNeutralButton(int,android.content.DialogInterface$OnClickListener)
-    public com.google.android.material.dialog.MaterialAlertDialogBuilder setNeutralButton(java.lang.CharSequence,android.content.DialogInterface$OnClickListener)
     public synthetic bridge androidx.appcompat.app.AlertDialog$Builder setNeutralButtonIcon(android.graphics.drawable.Drawable)
     public com.google.android.material.dialog.MaterialAlertDialogBuilder setNeutralButtonIcon(android.graphics.drawable.Drawable)
     public synthetic bridge androidx.appcompat.app.AlertDialog$Builder setOnCancelListener(android.content.DialogInterface$OnCancelListener)
@@ -20943,22 +20938,19 @@ com.zhuogui.firewall.data.AppDatabase_Impl:
     public void clearAllTables()
 com.zhuogui.firewall.data.dao.AppInfoDao:
     public abstract java.lang.Object delete(com.zhuogui.firewall.data.entity.AppInfo,kotlin.coroutines.Continuation)
-    public abstract java.lang.Object getByPackage(java.lang.String,kotlin.coroutines.Continuation)
     public abstract java.lang.Object setNetworkType(java.lang.String,java.lang.Boolean,java.lang.Boolean,kotlin.coroutines.Continuation)
     public abstract java.lang.Object update(com.zhuogui.firewall.data.entity.AppInfo,kotlin.coroutines.Continuation)
-com.zhuogui.firewall.data.dao.AppInfoDao_Impl$12
-com.zhuogui.firewall.data.dao.AppInfoDao_Impl$15
+com.zhuogui.firewall.data.dao.AppInfoDao_Impl$10
+com.zhuogui.firewall.data.dao.AppInfoDao_Impl$13
 com.zhuogui.firewall.data.dao.AppInfoDao_Impl$2:
     protected void bind(androidx.sqlite.db.SupportSQLiteStatement,com.zhuogui.firewall.data.entity.AppInfo)
     protected synthetic bridge void bind(androidx.sqlite.db.SupportSQLiteStatement,java.lang.Object)
 com.zhuogui.firewall.data.dao.AppInfoDao_Impl$3:
     protected void bind(androidx.sqlite.db.SupportSQLiteStatement,com.zhuogui.firewall.data.entity.AppInfo)
     protected synthetic bridge void bind(androidx.sqlite.db.SupportSQLiteStatement,java.lang.Object)
-com.zhuogui.firewall.data.dao.AppInfoDao_Impl$8
 com.zhuogui.firewall.data.dao.AppInfoDao_Impl$9
 com.zhuogui.firewall.data.dao.AppInfoDao_Impl:
     public java.lang.Object delete(com.zhuogui.firewall.data.entity.AppInfo,kotlin.coroutines.Continuation)
-    public java.lang.Object getByPackage(java.lang.String,kotlin.coroutines.Continuation)
     public java.lang.Object setNetworkType(java.lang.String,java.lang.Boolean,java.lang.Boolean,kotlin.coroutines.Continuation)
     public java.lang.Object update(com.zhuogui.firewall.data.entity.AppInfo,kotlin.coroutines.Continuation)
 com.zhuogui.firewall.data.dao.ConnectionLogDao:
@@ -21029,6 +21021,7 @@ com.zhuogui.firewall.service.FirewallVpnService:
     private static final int NOTIFICATION_ID
     private static final java.lang.String PREF_PROXY_ENABLED
     private static final java.lang.String PREF_PROXY_HOST
+    private static final java.lang.String PREF_PROXY_PACKAGE
     private static final java.lang.String PREF_PROXY_PORT
     private static final java.lang.String TAG
     private static final java.lang.String VPN_ADDRESS
@@ -22009,7 +22002,6 @@ kotlin.collections.ArraysKt___ArraysKt:
     public static final java.lang.Integer firstOrNull(int[],kotlin.jvm.functions.Function1)
     public static final java.lang.Long firstOrNull(long[])
     public static final java.lang.Long firstOrNull(long[],kotlin.jvm.functions.Function1)
-    public static final java.lang.Object firstOrNull(java.lang.Object[])
     public static final java.lang.Object firstOrNull(java.lang.Object[],kotlin.jvm.functions.Function1)
     public static final java.lang.Short firstOrNull(short[])
     public static final java.lang.Short firstOrNull(short[],kotlin.jvm.functions.Function1)
@@ -23309,7 +23301,6 @@ kotlin.collections.CollectionsKt__CollectionsKt:
     public static final java.util.List listOfNotNull(java.lang.Object)
     public static final varargs java.util.List listOfNotNull(java.lang.Object[])
     private static final java.util.List mutableListOf()
-    public static final varargs java.util.List mutableListOf(java.lang.Object[])
     private static final java.util.Collection orEmpty(java.util.Collection)
     private static final java.util.List orEmpty(java.util.List)
     private static final void rangeCheck$CollectionsKt__CollectionsKt(int,int,int)
@@ -24072,8 +24063,6 @@ kotlin.coroutines.intrinsics.IntrinsicsKt__IntrinsicsKt:
     public void <init>()
     public static synthetic void getCOROUTINE_SUSPENDED$annotations()
     private static final java.lang.Object suspendCoroutineUninterceptedOrReturn(kotlin.jvm.functions.Function1,kotlin.coroutines.Continuation)
-kotlin.coroutines.jvm.internal.BaseContinuationImpl:
-    public kotlin.coroutines.Continuation create(kotlin.coroutines.Continuation)
 kotlin.coroutines.jvm.internal.Boxing:
     public static final java.lang.Byte boxByte(byte)
     public static final java.lang.Character boxChar(char)
@@ -25979,14 +25968,10 @@ kotlinx.coroutines.AwaitAll
 kotlinx.coroutines.AwaitKt$joinAll$1
 kotlinx.coroutines.AwaitKt$joinAll$3
 kotlinx.coroutines.AwaitKt
-kotlinx.coroutines.BlockingCoroutine
 kotlinx.coroutines.BuildersKt:
     public static final kotlinx.coroutines.Deferred async(kotlinx.coroutines.CoroutineScope,kotlin.coroutines.CoroutineContext,kotlinx.coroutines.CoroutineStart,kotlin.jvm.functions.Function2)
     public static synthetic kotlinx.coroutines.Deferred async$default(kotlinx.coroutines.CoroutineScope,kotlin.coroutines.CoroutineContext,kotlinx.coroutines.CoroutineStart,kotlin.jvm.functions.Function2,int,java.lang.Object)
     public static final java.lang.Object invoke(kotlinx.coroutines.CoroutineDispatcher,kotlin.jvm.functions.Function2,kotlin.coroutines.Continuation)
-    public static final java.lang.Object runBlocking(kotlin.coroutines.CoroutineContext,kotlin.jvm.functions.Function2)
-    public static synthetic java.lang.Object runBlocking$default(kotlin.coroutines.CoroutineContext,kotlin.jvm.functions.Function2,int,java.lang.Object)
-kotlinx.coroutines.BuildersKt__BuildersKt
 kotlinx.coroutines.BuildersKt__Builders_commonKt:
     private static final int RESUMED
     private static final int SUSPENDED
@@ -26162,12 +26147,9 @@ kotlinx.coroutines.DispatchersKt
 kotlinx.coroutines.DisposableFutureHandle
 kotlinx.coroutines.DisposeOnCompletion
 kotlinx.coroutines.EventLoop:
-    public static synthetic void decrementUseCount$default(kotlinx.coroutines.EventLoop,boolean,int,java.lang.Object)
     public final boolean isActive()
     protected boolean isEmpty()
     public final kotlinx.coroutines.CoroutineDispatcher limitedParallelism(int)
-    public long processNextEvent()
-    public boolean shouldBeProcessedFromContext()
 kotlinx.coroutines.EventLoopImplBase$DelayedResumeTask
 kotlinx.coroutines.EventLoopImplBase$DelayedRunnableTask
 kotlinx.coroutines.EventLoopImplBase$DelayedTask:
@@ -26349,8 +26331,6 @@ kotlinx.coroutines.SupervisorKt:
     public static final java.lang.Object supervisorScope(kotlin.jvm.functions.Function2,kotlin.coroutines.Continuation)
 kotlinx.coroutines.ThreadContextElement$DefaultImpls
 kotlinx.coroutines.ThreadContextElementKt
-kotlinx.coroutines.ThreadLocalEventLoop:
-    public final kotlinx.coroutines.EventLoop currentOrNull$kotlinx_coroutines_core()
 kotlinx.coroutines.ThreadPoolDispatcherKt
 kotlinx.coroutines.ThreadPoolDispatcherKt__MultithreadedDispatchers_commonKt
 kotlinx.coroutines.ThreadPoolDispatcherKt__ThreadPoolDispatcherKt
@@ -27791,6 +27771,7 @@ androidx.activity.FullyDrawnReporter:
     public boolean reportPosted
     public final java.lang.Runnable reportRunnable
     public int reporterCount
+    public final void fullyDrawnReported()
     public static boolean isFullyDrawnReported()
 androidx.activity.FullyDrawnReporterOwner
 androidx.activity.ImmLeaksCleaner
@@ -27864,6 +27845,7 @@ androidx.activity.result.ActivityResultLauncher:
     public abstract int getExpandedOffset()
     public static android.os.Handler getHandler$1()
     public abstract int getHiddenOffset()
+    public static androidx.loader.app.LoaderManagerImpl getInstance(androidx.lifecycle.LifecycleOwner)
     public abstract int getMaxViewPositionHorizontal()
     public abstract int getMinViewPositionHorizontal()
     public abstract int getOuterEdge(android.view.View)
@@ -27889,6 +27871,8 @@ androidx.activity.result.ActivityResultLauncher:
     public abstract void stop()
     public abstract void unregister()
     public abstract void updateCoplanarSiblingLayoutParams()
+androidx.activity.result.ActivityResultRegistry$2:
+    public final void unregister()
 androidx.activity.result.ActivityResultRegistry$3
 androidx.activity.result.ActivityResultRegistry$LifecycleContainer:
     public static void addObserver()
@@ -28222,12 +28206,9 @@ androidx.appcompat.app.AlertController$AlertParams:
     public int mIconId
     public java.lang.String mIsCheckedColumn
     public boolean mIsMultiChoice
-    public java.lang.CharSequence[] mItems
     public java.lang.String mLabelColumn
     public android.graphics.drawable.Drawable mNegativeButtonIcon
     public android.graphics.drawable.Drawable mNeutralButtonIcon
-    public android.content.DialogInterface$OnClickListener mNeutralButtonListener
-    public java.lang.CharSequence mNeutralButtonText
     public android.content.DialogInterface$OnCancelListener mOnCancelListener
     public android.content.DialogInterface$OnMultiChoiceClickListener mOnCheckboxClickListener
     public android.content.DialogInterface$OnDismissListener mOnDismissListener
@@ -28290,8 +28271,10 @@ androidx.appcompat.app.AlertDialog$Builder:
     public androidx.appcompat.app.AlertDialog$Builder setAdapter(android.widget.ListAdapter,android.content.DialogInterface$OnClickListener)
     public androidx.appcompat.app.AlertDialog$Builder setCustomTitle(android.view.View)
     public androidx.appcompat.app.AlertDialog$Builder setIcon(android.graphics.drawable.Drawable)
+    public static androidx.appcompat.app.AlertDialog$Builder setItems()
     public static androidx.appcompat.app.AlertDialog$Builder setMessage()
     public static androidx.appcompat.app.AlertDialog$Builder setNegativeButton()
+    public static androidx.appcompat.app.AlertDialog$Builder setNeutralButton()
     public androidx.appcompat.app.AlertDialog$Builder setOnKeyListener(android.content.DialogInterface$OnKeyListener)
     public static androidx.appcompat.app.AlertDialog$Builder setPositiveButton()
     public androidx.appcompat.app.AlertDialog$Builder setSingleChoiceItems(android.widget.ListAdapter,int,android.content.DialogInterface$OnClickListener)
@@ -29626,7 +29609,14 @@ androidx.appcompat.widget.TooltipCompat
 androidx.appcompat.widget.TooltipCompatHandler$$InternalSyntheticLambda$1$990bd139c764fdd0af01d525cfae7cb46744c3b2435b7922b50af1bf6983d455$0
 androidx.appcompat.widget.TooltipCompatHandler$$InternalSyntheticLambda$1$990bd139c764fdd0af01d525cfae7cb46744c3b2435b7922b50af1bf6983d455$1
 androidx.appcompat.widget.TooltipCompatHandler
-androidx.appcompat.widget.TooltipPopup
+androidx.appcompat.widget.TooltipPopup:
+    public void <init>(android.content.Context)
+    public static void computePosition()
+    public final android.widget.LinearLayout getRoot()
+    public static com.google.android.material.card.MaterialCardView getRoot()
+    public final void hide()
+    public final boolean isShowing()
+    public static void show()
 androidx.appcompat.widget.VectorEnabledTintResources:
     public final java.lang.ref.WeakReference mContextRef
     public static boolean sCompatVectorFromResourcesEnabled
@@ -29824,6 +29814,8 @@ androidx.collection.SparseArrayCompat:
     public static java.lang.Object get()
     public static int indexOfValue()
     public final int keyAt(int)
+    public final int size()
+    public final java.lang.Object valueAt(int)
 androidx.concurrent.futures.AbstractResolvableFuture$$InternalSyntheticThrowCCEIfNotNull$15$743ab975251cb1db22f16289a9e8244bd87ce07e9c3878c0207da2083dd011f0$0
 androidx.concurrent.futures.AbstractResolvableFuture$$InternalSyntheticThrowCCEIfNotNull$8$282794e7407cbf0f962ed9c1883a9f2c64f05feb993d954f51a3758513079b57$0
 androidx.concurrent.futures.AbstractResolvableFuture$1
@@ -31263,7 +31255,7 @@ androidx.core.os.LocaleListCompat:
     public final int size()
     public final java.lang.String toLanguageTags()
     public static androidx.core.os.LocaleListCompat wrap(android.os.LocaleList)
-androidx.core.os.LocaleListCompatWrapper$$InternalSyntheticThrowCCEIfNotNull$416$dd0d3399d7d164768be69e26cdc88e49809bc46afb623c060d951b7b929d77ad$0
+androidx.core.os.LocaleListCompatWrapper$$InternalSyntheticThrowCCEIfNotNull$380$dd0d3399d7d164768be69e26cdc88e49809bc46afb623c060d951b7b929d77ad$0
 androidx.core.os.LocaleListCompatWrapper
 androidx.core.os.LocaleListInterface:
     public abstract java.util.Locale get()
@@ -32481,8 +32473,8 @@ androidx.fragment.app.FragmentManager$OnBackStackChangedListener
 androidx.fragment.app.FragmentManager$PopBackStackState:
     public final java.lang.String mName
 androidx.fragment.app.FragmentManager
-androidx.fragment.app.FragmentManagerImpl$$InternalSyntheticThrowCCEIfNotNull$324$69fb09dc296c49d3d2c29c2a1d1dd9b1b56440b324490f8ee7d53f13950cd83a$0
-androidx.fragment.app.FragmentManagerImpl$$InternalSyntheticThrowCCEIfNotNull$324$69fb09dc296c49d3d2c29c2a1d1dd9b1b56440b324490f8ee7d53f13950cd83a$1
+androidx.fragment.app.FragmentManagerImpl$$InternalSyntheticThrowCCEIfNotNull$296$69fb09dc296c49d3d2c29c2a1d1dd9b1b56440b324490f8ee7d53f13950cd83a$0
+androidx.fragment.app.FragmentManagerImpl$$InternalSyntheticThrowCCEIfNotNull$296$69fb09dc296c49d3d2c29c2a1d1dd9b1b56440b324490f8ee7d53f13950cd83a$1
 androidx.fragment.app.FragmentManagerImpl$$InternalSyntheticThrowCCEIfNotNull$7$64e234675765d250aee28f6e57227d93b340c151ad6792e549903ecb0c2d3a87$0
 androidx.fragment.app.FragmentManagerImpl:
     public static boolean DEBUG
@@ -32803,7 +32795,7 @@ androidx.lifecycle.Lifecycle:
 androidx.lifecycle.LifecycleCoroutineScope
 androidx.lifecycle.LifecycleCoroutineScopeImpl$register$1:
     public int label
-    public final java.lang.Object invoke$2()
+    public final java.lang.Object invoke(kotlinx.coroutines.CoroutineScope,kotlin.coroutines.Continuation)
 androidx.lifecycle.LifecycleCoroutineScopeImpl:
     public static androidx.lifecycle.Lifecycle getLifecycle$lifecycle_common()
     public static void register()
@@ -32964,9 +32956,7 @@ androidx.loader.app.LoaderManagerImpl$LoaderViewModel:
     public boolean mCreatingLoader
     public static void dump()
     public static void markForRedelivery()
-androidx.loader.app.LoaderManagerImpl:
-    public static boolean DEBUG
-    static void <clinit>()
+androidx.loader.app.LoaderManagerImpl
 androidx.loader.content.Loader
 androidx.preference.CheckBoxPreference$Listener
 androidx.preference.CheckBoxPreference:
@@ -34126,11 +34116,25 @@ androidx.room.AutoClosingRoomOpenHelper$AutoClosingSupportSQLiteDatabase$version
 androidx.room.AutoClosingRoomOpenHelper$AutoClosingSupportSQLiteDatabase
 androidx.room.AutoClosingRoomOpenHelper$AutoClosingSupportSqliteStatement$executeInsert$1
 androidx.room.AutoClosingRoomOpenHelper$AutoClosingSupportSqliteStatement$executeSqliteStatementWithRefCount$1:
-    public final synthetic int $r8$classId
-    public final java.lang.Object invoke(androidx.sqlite.db.SupportSQLiteDatabase)
     public final void invoke(java.lang.Throwable)
+    public final java.lang.Object invoke$2()
 androidx.room.AutoClosingRoomOpenHelper$AutoClosingSupportSqliteStatement$executeUpdateDelete$1
-androidx.room.AutoClosingRoomOpenHelper$AutoClosingSupportSqliteStatement
+androidx.room.AutoClosingRoomOpenHelper$AutoClosingSupportSqliteStatement:
+    public final androidx.room.AutoCloser autoCloser
+    public final java.util.ArrayList binds
+    public final java.lang.String sql
+    public void <init>(java.lang.String)
+    public final void bindBlob(int,byte[])
+    public final void bindDouble(int,double)
+    public final void bindLong(int,long)
+    public final void bindNull(int)
+    public final void bindString(int,java.lang.String)
+    public final void close()
+    public static void doBinds()
+    public final long executeInsert()
+    public final java.lang.Object executeSqliteStatementWithRefCount(androidx.room.AutoClosingRoomOpenHelper$AutoClosingSupportSQLiteDatabase$attachedDbs$1)
+    public final int executeUpdateDelete()
+    public final void saveBinds(int,java.lang.Object)
 androidx.room.AutoClosingRoomOpenHelper$KeepAliveCursor
 androidx.room.AutoClosingRoomOpenHelper:
     public final androidx.room.AutoCloser autoCloser
@@ -34145,21 +34149,21 @@ androidx.room.AutoClosingRoomOpenHelper:
     public final void setWriteAheadLoggingEnabled(boolean)
 androidx.room.AutoClosingRoomOpenHelperFactory
 androidx.room.CoroutinesRoom$Companion$createFlow$1$1$1:
-    public final java.lang.Object invoke$2()
+    public final java.lang.Object invoke(kotlinx.coroutines.CoroutineScope,kotlin.coroutines.Continuation)
 androidx.room.CoroutinesRoom$Companion$createFlow$1$1$observer$1:
     public final boolean isRemote$room_runtime_release()
     private static boolean isRemote$room_runtime_release$androidx$room$MultiInstanceInvalidationClient$1()
 androidx.room.CoroutinesRoom$Companion$createFlow$1$1:
-    public final java.lang.Object invoke$2()
+    public final java.lang.Object invoke(kotlinx.coroutines.CoroutineScope,kotlin.coroutines.Continuation)
 androidx.room.CoroutinesRoom$Companion$createFlow$1:
     public final java.lang.Object invoke$3()
 androidx.room.CoroutinesRoom$Companion$execute$2:
     public int label
-    public final java.lang.Object invoke$2()
+    public final java.lang.Object invoke(kotlinx.coroutines.CoroutineScope,kotlin.coroutines.Continuation)
 androidx.room.CoroutinesRoom$Companion$execute$4$1
 androidx.room.CoroutinesRoom$Companion$execute$4$job$1:
     public int label
-    public final java.lang.Object invoke$2()
+    public final java.lang.Object invoke(kotlinx.coroutines.CoroutineScope,kotlin.coroutines.Continuation)
 androidx.room.CoroutinesRoom$Companion
 androidx.room.CoroutinesRoom:
     public static final androidx.profileinstaller.ProfileInstaller$2 Companion
@@ -34345,8 +34349,6 @@ androidx.room.RoomOpenHelper:
 androidx.room.RoomSQLiteQuery$Companion
 androidx.room.RoomSQLiteQuery:
     public static final androidx.profileinstaller.ProfileInstaller$2 Companion
-    public final void bindBlob(int,byte[])
-    public final void bindDouble(int,double)
     public static int getArgCount()
     public final void init(int,java.lang.String)
 androidx.room.SQLiteCopyOpenHelper$createFrameworkOpenHelper$configuration$1
@@ -34452,9 +34454,6 @@ androidx.sqlite.db.SupportSQLiteOpenHelper$Factory:
 androidx.sqlite.db.SupportSQLiteOpenHelper:
     public abstract java.lang.String getDatabaseName()
     public abstract androidx.sqlite.db.SupportSQLiteDatabase getReadableDatabase()
-androidx.sqlite.db.SupportSQLiteProgram:
-    public abstract void bindBlob(int,byte[])
-    public abstract void bindDouble(int,double)
 androidx.sqlite.db.framework.FrameworkSQLiteDatabase$$InternalSyntheticLambda$1$4ca1fe47fb60a659663dfb72e6161ce39c33ec8a71bb8b0b8365d109d32752af$0
 androidx.sqlite.db.framework.FrameworkSQLiteDatabase$Companion
 androidx.sqlite.db.framework.FrameworkSQLiteDatabase$query$cursorFactory$1:
@@ -34483,7 +34482,6 @@ androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper:
     public static final androidx.profileinstaller.ProfileInstaller$2 Companion
     static void <clinit>()
     public final java.lang.String getDatabaseName()
-    public final androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper$OpenHelper getDelegate()
     public final androidx.sqlite.db.SupportSQLiteDatabase getReadableDatabase()
 androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory:
     public final androidx.sqlite.db.SupportSQLiteOpenHelper create(androidx.sqlite.db.SupportSQLiteOpenHelper$Configuration)
@@ -34744,7 +34742,7 @@ androidx.transition.ViewUtilsBase
 androidx.transition.Visibility$DisappearListener:
     public final void hideViewWhenNotCanceled()
 androidx.transition.Visibility
-androidx.transition.WindowIdApi14$$InternalSyntheticThrowCCEIfNotNull$416$346ba31081d848221d10738ffacfe8b42a1cf2bcc44a47580e10fd7ecc1dfab1$0
+androidx.transition.WindowIdApi14$$InternalSyntheticThrowCCEIfNotNull$380$346ba31081d848221d10738ffacfe8b42a1cf2bcc44a47580e10fd7ecc1dfab1$0
 androidx.transition.WindowIdApi14
 androidx.vectordrawable.graphics.drawable.AndroidResources:
     public static final int[] STYLEABLE_ANIMATOR
@@ -36103,17 +36101,10 @@ com.google.android.material.chip.ChipDrawable:
     public static boolean shouldDrawText()
     public final void updateCompatRippleColor()
     public static void updateFrameworkCloseIconRipple()
-com.google.android.material.chip.ChipGroup$1$$InternalSyntheticThrowCCEIfNotNull$338$0b057a8df9f082e9e7d11715fcd15eefaf17b10798d1030b3b3dc8199824ec7f$0
+com.google.android.material.chip.ChipGroup$1$$InternalSyntheticThrowCCEIfNotNull$310$0b057a8df9f082e9e7d11715fcd15eefaf17b10798d1030b3b3dc8199824ec7f$0
 com.google.android.material.chip.ChipGroup$1:
     public static void apply()
     public static boolean canSwipeDismissView()
-    public static java.lang.Object deleteRuleByTarget()
-    public static kotlinx.coroutines.flow.Flow getAllApps()
-    public static kotlinx.coroutines.flow.Flow getAllRules()
-    public static java.lang.Object getAppByUid()
-    public static kotlinx.coroutines.flow.Flow getLogsForPackage()
-    public static java.lang.Object insertLog()
-    public static java.lang.Object insertRule()
     public final boolean isCompatPaddingEnabled()
     public static void onCheckedChanged()
     public final void onCheckedChanged$1()
@@ -36122,8 +36113,6 @@ com.google.android.material.chip.ChipGroup$1:
     public static void onDayClick()
     public static void onEdgePathCreated()
     public static void onInterceptTouchEvent()
-    public static java.lang.Object setAllAppsAllowed()
-    public static java.lang.Object setAppAllowed()
     public final void setBackgroundDrawable(android.graphics.drawable.Drawable)
     public static void setShadowPadding()
 com.google.android.material.chip.ChipGroup$2
@@ -36176,13 +36165,7 @@ com.google.android.material.datepicker.CalendarConstraints:
     public static com.google.android.material.datepicker.Month getStart()
     public static int getYearSpan()
 com.google.android.material.datepicker.CalendarItemStyle
-com.google.android.material.datepicker.CalendarStyle:
-    public final androidx.appcompat.widget.AppCompatBackgroundHelper day
-    public final androidx.appcompat.widget.AppCompatBackgroundHelper invalidDay
-    public final android.graphics.Paint rangeFill
-    public final androidx.appcompat.widget.AppCompatBackgroundHelper selectedDay
-    public final androidx.appcompat.widget.AppCompatBackgroundHelper selectedYear
-    public final androidx.appcompat.widget.AppCompatBackgroundHelper todayDay
+com.google.android.material.datepicker.CalendarStyle
 com.google.android.material.datepicker.DateSelector
 com.google.android.material.datepicker.DateStrings
 com.google.android.material.datepicker.DateValidatorPointForward$1
@@ -36220,7 +36203,7 @@ com.google.android.material.datepicker.MaterialCalendar:
     public final boolean addOnSelectionChangedListener()
     public static androidx.recyclerview.widget.RecyclerView$ItemDecoration createItemDecoration()
     public static com.google.android.material.datepicker.CalendarConstraints getCalendarConstraints()
-    public static com.google.android.material.datepicker.CalendarStyle getCalendarStyle()
+    public static com.zhuogui.firewall.data.dao.AppInfoDao_Impl getCalendarStyle()
     public static com.google.android.material.datepicker.Month getCurrentMonth()
     public static void getDateSelector$1()
     public final androidx.recyclerview.widget.LinearLayoutManager getLayoutManager()
@@ -36232,11 +36215,11 @@ com.google.android.material.datepicker.MaterialCalendarGridView:
     public final java.util.Calendar dayCompute
     public static void gainFocus()
     public static android.view.View getChildAtPosition()
-com.google.android.material.datepicker.MaterialDatePicker$1$$InternalSyntheticThrowCCEIfNotNull$338$8c0322c3b6a8ad59d9da5ebe01668fc41b267413290427d3382a40f1207874a7$0
+com.google.android.material.datepicker.MaterialDatePicker$1$$InternalSyntheticThrowCCEIfNotNull$310$8c0322c3b6a8ad59d9da5ebe01668fc41b267413290427d3382a40f1207874a7$0
 com.google.android.material.datepicker.MaterialDatePicker$1
 com.google.android.material.datepicker.MaterialDatePicker$2
 com.google.android.material.datepicker.MaterialDatePicker$3
-com.google.android.material.datepicker.MaterialDatePicker$4$$InternalSyntheticThrowCCEIfNotNull$337$2080488a9eb3ac5fd3708c079191a32da7cee58a343787f7d3f697c0f35a41bb$0
+com.google.android.material.datepicker.MaterialDatePicker$4$$InternalSyntheticThrowCCEIfNotNull$309$2080488a9eb3ac5fd3708c079191a32da7cee58a343787f7d3f697c0f35a41bb$0
 com.google.android.material.datepicker.MaterialDatePicker$4
 com.google.android.material.datepicker.MaterialDatePicker:
     public static final java.lang.String CANCEL_BUTTON_TAG
@@ -36336,8 +36319,10 @@ com.google.android.material.dialog.MaterialAlertDialogBuilder:
     public static com.google.android.material.dialog.MaterialAlertDialogBuilder setCustomTitle()
     public final androidx.appcompat.app.AlertDialog$Builder setIcon(android.graphics.drawable.Drawable)
     public static com.google.android.material.dialog.MaterialAlertDialogBuilder setIcon()
+    public static com.google.android.material.dialog.MaterialAlertDialogBuilder setItems()
     public final void setMessage(java.lang.String)
     public final void setNegativeButton()
+    public static com.google.android.material.dialog.MaterialAlertDialogBuilder setNeutralButton()
     public final androidx.appcompat.app.AlertDialog$Builder setOnKeyListener(android.content.DialogInterface$OnKeyListener)
     public static com.google.android.material.dialog.MaterialAlertDialogBuilder setOnKeyListener()
     public final void setPositiveButton(java.lang.String,android.content.DialogInterface$OnClickListener)
@@ -36727,7 +36712,7 @@ com.google.android.material.shape.CornerTreatment
 com.google.android.material.shape.CutCornerTreatment:
     public float size
 com.google.android.material.shape.EdgeTreatment$$IA$1
-com.google.android.material.shape.EdgeTreatment$$InternalSyntheticThrowCCEIfNotNull$304$f7cd33970d1e5cb7a876902595d7d3ac7531740d41d48f830e58c210c25a5702$0
+com.google.android.material.shape.EdgeTreatment$$InternalSyntheticThrowCCEIfNotNull$240$f7cd33970d1e5cb7a876902595d7d3ac7531740d41d48f830e58c210c25a5702$0
 com.google.android.material.shape.EdgeTreatment:
     public synthetic void <init>(int,int)
     public static android.graphics.Typeface buildTypeface()
@@ -37008,7 +36993,7 @@ com.google.android.material.tabs.ElasticTabIndicatorInterpolator:
     public static float decInterp(float)
 com.google.android.material.tabs.FadeTabIndicatorInterpolator
 com.google.android.material.tabs.TabIndicatorInterpolator
-com.google.android.material.tabs.TabLayout$$InternalSyntheticThrowCCEIfNotNull$57$b72ad72a68758d8eb7408a02a365379c314b90fd88cc75f6eb55de9fdaac5229$0
+com.google.android.material.tabs.TabLayout$$InternalSyntheticThrowCCEIfNotNull$248$b72ad72a68758d8eb7408a02a365379c314b90fd88cc75f6eb55de9fdaac5229$0
 com.google.android.material.tabs.TabLayout$1
 com.google.android.material.tabs.TabLayout$AdapterChangeListener
 com.google.android.material.tabs.TabLayout$BaseOnTabSelectedListener:
@@ -37463,7 +37448,10 @@ com.zhuogui.firewall.MainActivity$Companion
 com.zhuogui.firewall.MainActivity$setupTogglePanel$1$1:
     public static java.lang.Object emit()
 com.zhuogui.firewall.MainActivity$setupTogglePanel$1:
-    public final java.lang.Object invoke$2()
+    public final java.lang.Object invoke(kotlinx.coroutines.CoroutineScope,kotlin.coroutines.Continuation)
+com.zhuogui.firewall.MainActivity$showProxyConfigDialog$lambda$19$lambda$18$$inlined$sortedBy$1
+com.zhuogui.firewall.MainActivity$showProxyConfigDialog$updateVisibility$1:
+    public static void invoke$2()
 com.zhuogui.firewall.MainActivity:
     public static final androidx.profileinstaller.ProfileInstaller$2 Companion
     public com.zhuogui.firewall.ui.MainViewModel viewModel
@@ -37484,12 +37472,14 @@ com.zhuogui.firewall.ZhuoguiApp:
 com.zhuogui.firewall.data.AppDatabase$Companion
 com.zhuogui.firewall.data.AppDatabase_Impl$1
 com.zhuogui.firewall.data.dao.AppInfoDao
-com.zhuogui.firewall.data.dao.AppInfoDao_Impl$11:
+com.zhuogui.firewall.data.dao.AppInfoDao_Impl$12:
     public static java.lang.Long call()
-com.zhuogui.firewall.data.dao.AppInfoDao_Impl$13:
-    public static com.zhuogui.firewall.data.entity.AppInfo call()
+com.zhuogui.firewall.data.dao.AppInfoDao_Impl$14:
+    public static kotlin.Unit call()
+com.zhuogui.firewall.data.dao.AppInfoDao_Impl$15:
     public static java.util.List call()
-com.zhuogui.firewall.data.dao.AppInfoDao_Impl$14
+com.zhuogui.firewall.data.dao.AppInfoDao_Impl$16
+com.zhuogui.firewall.data.dao.AppInfoDao_Impl$17
 com.zhuogui.firewall.data.dao.AppInfoDao_Impl$1:
     public static void bind()
     public static void bind$1()
@@ -37507,21 +37497,18 @@ com.zhuogui.firewall.data.dao.AppInfoDao_Impl$4:
     private static java.lang.String createQuery$com$zhuogui$firewall$data$dao$AppInfoDao_Impl$4()
     private static java.lang.String createQuery$com$zhuogui$firewall$data$dao$AppInfoDao_Impl$5()
     private static java.lang.String createQuery$com$zhuogui$firewall$data$dao$AppInfoDao_Impl$6()
+    private static java.lang.String createQuery$com$zhuogui$firewall$data$dao$AppInfoDao_Impl$7()
 com.zhuogui.firewall.data.dao.AppInfoDao_Impl$5
 com.zhuogui.firewall.data.dao.AppInfoDao_Impl$6
 com.zhuogui.firewall.data.dao.AppInfoDao_Impl$7
+com.zhuogui.firewall.data.dao.AppInfoDao_Impl$8
 com.zhuogui.firewall.data.dao.AppInfoDao_Impl:
-    public void <init>(android.content.Context)
-    public static void computePosition()
     public final kotlinx.coroutines.flow.FlowKt__BuildersKt$flowOf$$inlined$unsafeFlow$2 getAllApps()
     public static java.lang.Object getByUid()
-    public final android.widget.LinearLayout getRoot()
-    public final void hide()
-    public static java.lang.Object insert()
-    public final boolean isShowing()
+    public final java.lang.Object insert(com.zhuogui.firewall.data.entity.AppInfo,com.zhuogui.firewall.data.repository.FirewallRepository$insertOrUpdateApp$1)
     public static java.lang.Object setAllAllowed()
     public static java.lang.Object setAllowed()
-    public static void show()
+    public static java.lang.Object setUseProxy()
 com.zhuogui.firewall.data.dao.ConnectionLogDao
 com.zhuogui.firewall.data.dao.ConnectionLogDao_Impl$$InternalSyntheticThrowCCEIfNotNull$7$41019217a3dd5bd871e6f901fde940e5a4f5d02ce45fba7a524972a5b5ae9c59$1
 com.zhuogui.firewall.data.dao.ConnectionLogDao_Impl$$InternalSyntheticThrowCCEIfNotNull$7$a5b032de4ad944b715cbf6616730a065d062e16c145863e267689b90ae963c10$0
@@ -37612,12 +37599,21 @@ com.zhuogui.firewall.data.dao.FirewallRuleDao_Impl:
     public static android.content.res.ColorStateList createSwitchThumbColorStateList()
     public static java.lang.Object deleteByTarget()
     public final kotlinx.coroutines.flow.FlowKt__BuildersKt$flowOf$$inlined$unsafeFlow$2 getAllRules()
-    public static com.google.android.material.card.MaterialCardView getRoot()
     public static android.graphics.PorterDuff$Mode getTintModeForDrawableRes()
     public static java.lang.Object insert()
     public static boolean tintDrawable()
     public static boolean tintDrawableUsingColorFilter()
-com.zhuogui.firewall.data.repository.FirewallRepository
+com.zhuogui.firewall.data.repository.FirewallRepository:
+    public static java.lang.Object deleteRuleByTarget()
+    public static kotlinx.coroutines.flow.Flow getAllApps()
+    public static kotlinx.coroutines.flow.Flow getAllRules()
+    public static java.lang.Object getAppByUid()
+    public static kotlinx.coroutines.flow.Flow getLogsForPackage()
+    public static java.lang.Object insertLog()
+    public static java.lang.Object insertRule()
+    public static java.lang.Object setAllAppsAllowed()
+    public static java.lang.Object setAppAllowed()
+    public static java.lang.Object setAppUseProxy()
 com.zhuogui.firewall.databinding.ActivityMainBinding:
     public final androidx.coordinatorlayout.widget.CoordinatorLayout rootView
     public static androidx.coordinatorlayout.widget.CoordinatorLayout getRoot()
@@ -37631,30 +37627,29 @@ com.zhuogui.firewall.databinding.ItemAppBinding
 com.zhuogui.firewall.databinding.ItemConnectionBinding
 com.zhuogui.firewall.service.FirewallVpnService$Companion
 com.zhuogui.firewall.service.FirewallVpnService$onCreate$1:
-    public final java.lang.Object invoke$2()
+    public final java.lang.Object invoke(kotlinx.coroutines.CoroutineScope,kotlin.coroutines.Continuation)
 com.zhuogui.firewall.service.FirewallVpnService$processPacket$2:
-    public final java.lang.Object invoke$2()
+    public final java.lang.Object invoke(kotlinx.coroutines.CoroutineScope,kotlin.coroutines.Continuation)
 com.zhuogui.firewall.service.FirewallVpnService$readTunPackets$2:
-    public final java.lang.Object invoke$2()
+    public final java.lang.Object invoke(kotlinx.coroutines.CoroutineScope,kotlin.coroutines.Continuation)
 com.zhuogui.firewall.service.FirewallVpnService$reloadRules$1:
-    public final java.lang.Object invoke$2()
-com.zhuogui.firewall.service.FirewallVpnService$startVpn$1:
+    public final java.lang.Object invoke(kotlinx.coroutines.CoroutineScope,kotlin.coroutines.Continuation)
+com.zhuogui.firewall.service.FirewallVpnService$startVpn$2:
     public static java.lang.Boolean invoke$2()
-    public static void invoke$2()
     public static java.lang.Boolean invoke$3()
-com.zhuogui.firewall.service.FirewallVpnService$startVpn$2
+    public static void invoke$3()
 com.zhuogui.firewall.service.FirewallVpnService$startVpn$3
-com.zhuogui.firewall.service.FirewallVpnService$startVpn$4:
-    public final java.lang.Object invoke$2()
+com.zhuogui.firewall.service.FirewallVpnService$startVpn$4
 com.zhuogui.firewall.service.FirewallVpnService$startVpn$5:
-    public final java.lang.Object invoke$2()
+    public final java.lang.Object invoke(kotlinx.coroutines.CoroutineScope,kotlin.coroutines.Continuation)
 com.zhuogui.firewall.service.FirewallVpnService$startVpn$6:
-    public final java.lang.Object invoke$2()
+    public final java.lang.Object invoke(kotlinx.coroutines.CoroutineScope,kotlin.coroutines.Continuation)
+com.zhuogui.firewall.service.FirewallVpnService$startVpn$7:
+    public final java.lang.Object invoke(kotlinx.coroutines.CoroutineScope,kotlin.coroutines.Continuation)
 com.zhuogui.firewall.service.FirewallVpnService:
     public static final com.zhuogui.firewall.service.FirewallVpnService$Companion Companion
     public static final kotlinx.coroutines.flow.StateFlow liveConnections
     public static void createNotificationChannel()
-    public static com.zhuogui.firewall.vpn.proxy.Socks5Proxy$ProxyConfig loadProxyConfig()
     public static java.lang.Object loadRules()
     public static java.lang.Object processPacket()
     public static java.lang.Object readTunPackets()
@@ -37663,23 +37658,24 @@ com.zhuogui.firewall.service.FirewallVpnService:
     public static void updateLiveConnections()
 com.zhuogui.firewall.ui.MainViewModel$1:
     public int label
-    public final java.lang.Object invoke$2()
+    public final java.lang.Object invoke(kotlinx.coroutines.CoroutineScope,kotlin.coroutines.Continuation)
 com.zhuogui.firewall.ui.MainViewModel$addRule$1:
-    public final java.lang.Object invoke$2()
+    public final java.lang.Object invoke(kotlinx.coroutines.CoroutineScope,kotlin.coroutines.Continuation)
 com.zhuogui.firewall.ui.MainViewModel$deleteRuleByTarget$1:
-    public final java.lang.Object invoke$2()
+    public final java.lang.Object invoke(kotlinx.coroutines.CoroutineScope,kotlin.coroutines.Continuation)
 com.zhuogui.firewall.ui.MainViewModel$setAllAppsAllowed$1:
-    public final java.lang.Object invoke$2()
+    public final java.lang.Object invoke(kotlinx.coroutines.CoroutineScope,kotlin.coroutines.Continuation)
 com.zhuogui.firewall.ui.MainViewModel$setAppAllowed$1:
-    public final java.lang.Object invoke$2()
+    public final java.lang.Object invoke(kotlinx.coroutines.CoroutineScope,kotlin.coroutines.Continuation)
+com.zhuogui.firewall.ui.MainViewModel$setAppUseProxy$1:
+    public final java.lang.Object invoke(kotlinx.coroutines.CoroutineScope,kotlin.coroutines.Continuation)
 com.zhuogui.firewall.ui.MainViewModel$syncInstalledApps$1:
-    public final java.lang.Object invoke$2()
+    public final java.lang.Object invoke(kotlinx.coroutines.CoroutineScope,kotlin.coroutines.Continuation)
 com.zhuogui.firewall.ui.MainViewModel:
     public final kotlinx.coroutines.flow.StateFlowImpl _selectedPackage
     public final kotlinx.coroutines.flow.StateFlow allRules
     public final kotlinx.coroutines.flow.StateFlow isVpnRunning
     public final kotlinx.coroutines.flow.StateFlow selectedPackage
-    public static final void access$notifyVpnReload(com.zhuogui.firewall.ui.MainViewModel)
     public static void addRule()
     public static void deleteRuleByTarget()
     public static kotlinx.coroutines.flow.StateFlow getAllApps()
@@ -37687,12 +37683,14 @@ com.zhuogui.firewall.ui.MainViewModel:
     public static void notifyVpnReload()
     public final void setAllAppsAllowed(java.lang.Boolean)
     public static void setAppAllowed()
+    public static void setAppUseProxy()
     public final void syncInstalledApps()
 com.zhuogui.firewall.ui.adapter.AppAdapter$AppDiffCallback:
     public static boolean areContentsTheSame()
     public static boolean areItemsTheSame()
 com.zhuogui.firewall.ui.adapter.AppAdapter$AppViewHolder$$InternalSyntheticLambda$2$f9a34d68d8804c3df3e0bfb8f0fd8c1d7947b36bff505db51b998f46766ec690$1
 com.zhuogui.firewall.ui.adapter.AppAdapter$AppViewHolder$$InternalSyntheticLambda$2$f9a34d68d8804c3df3e0bfb8f0fd8c1d7947b36bff505db51b998f46766ec690$2
+com.zhuogui.firewall.ui.adapter.AppAdapter$AppViewHolder$$InternalSyntheticLambda$2$f9a34d68d8804c3df3e0bfb8f0fd8c1d7947b36bff505db51b998f46766ec690$3
 com.zhuogui.firewall.ui.adapter.AppAdapter$AppViewHolder:
     public static void bind()
 com.zhuogui.firewall.ui.adapter.AppAdapter:
@@ -37733,7 +37731,7 @@ com.zhuogui.firewall.ui.appdetail.AppDetailFragment$onViewCreated$6$2:
     public int label
     public static java.lang.Object invoke$7()
 com.zhuogui.firewall.ui.appdetail.AppDetailFragment$onViewCreated$6:
-    public final java.lang.Object invoke$2()
+    public final java.lang.Object invoke(kotlinx.coroutines.CoroutineScope,kotlin.coroutines.Continuation)
 com.zhuogui.firewall.ui.appdetail.AppDetailFragment$special$$inlined$viewModels$default$1:
     public final androidx.lifecycle.ViewModelStoreOwner invoke()
 com.zhuogui.firewall.ui.appdetail.AppDetailFragment$special$$inlined$viewModels$default$2:
@@ -37761,12 +37759,12 @@ com.zhuogui.firewall.ui.apps.AppListFragment$$InternalSyntheticLambda$2$8de1da62
 com.zhuogui.firewall.ui.apps.AppListFragment$onViewCreated$1
 com.zhuogui.firewall.ui.apps.AppListFragment$onViewCreated$2:
     public final java.lang.Integer invoke$1()
-    public static void invoke$3()
-com.zhuogui.firewall.ui.apps.AppListFragment$onViewCreated$3$1:
+com.zhuogui.firewall.ui.apps.AppListFragment$onViewCreated$3
+com.zhuogui.firewall.ui.apps.AppListFragment$onViewCreated$4$1:
     public static java.lang.Object emit$1()
-com.zhuogui.firewall.ui.apps.AppListFragment$onViewCreated$3:
-    public final java.lang.Object invoke$2()
 com.zhuogui.firewall.ui.apps.AppListFragment$onViewCreated$4:
+    public final java.lang.Object invoke(kotlinx.coroutines.CoroutineScope,kotlin.coroutines.Continuation)
+com.zhuogui.firewall.ui.apps.AppListFragment$onViewCreated$5:
     public final boolean onQueryTextChange()
     public final boolean onQueryTextSubmit()
 com.zhuogui.firewall.ui.apps.AppListFragment$onViewCreated$updateFilteredList$1:
@@ -37777,7 +37775,7 @@ com.zhuogui.firewall.ui.apps.AppListFragment$special$$inlined$viewModels$default
 com.zhuogui.firewall.ui.apps.AppListFragment$special$$inlined$viewModels$default$4
 com.zhuogui.firewall.ui.apps.AppListFragment$viewModel$2
 com.zhuogui.firewall.ui.apps.AppListFragment:
-    public static com.zhuogui.firewall.data.dao.AppInfoDao_Impl getBinding()
+    public static androidx.appcompat.widget.TooltipPopup getBinding()
     public static void navigateToDetail()
 com.zhuogui.firewall.util.AppInfoHelper$getInstalledApps$$inlined$sortedBy$1
 com.zhuogui.firewall.util.AppInfoHelper
@@ -37999,8 +37997,8 @@ kotlin.comparisons.ComparisonsKt
 kotlin.comparisons.ComparisonsKt__ComparisonsKt
 kotlin.comparisons.ComparisonsKt___ComparisonsJvmKt
 kotlin.comparisons.ComparisonsKt___ComparisonsKt
-kotlin.concurrent.ThreadsKt$$InternalSyntheticThrowCCEIfNotNull$279$7f085e73a60cc4103613ac40171a70b9783a3eddf8fde11a00a239f70c1870e6$0
-kotlin.concurrent.ThreadsKt$$InternalSyntheticThrowCCEIfNotNull$279$7f085e73a60cc4103613ac40171a70b9783a3eddf8fde11a00a239f70c1870e6$1
+kotlin.concurrent.ThreadsKt$$InternalSyntheticThrowCCEIfNotNull$368$7f085e73a60cc4103613ac40171a70b9783a3eddf8fde11a00a239f70c1870e6$0
+kotlin.concurrent.ThreadsKt$$InternalSyntheticThrowCCEIfNotNull$368$7f085e73a60cc4103613ac40171a70b9783a3eddf8fde11a00a239f70c1870e6$1
 kotlin.concurrent.ThreadsKt:
     public static int compare(int,int)
     public static final int differenceModulo(int,int,int)
@@ -38054,11 +38052,7 @@ kotlin.coroutines.intrinsics.CoroutineSingletons:
 kotlin.coroutines.intrinsics.IntrinsicsKt
 kotlin.coroutines.intrinsics.IntrinsicsKt__IntrinsicsJvmKt
 kotlin.coroutines.intrinsics.IntrinsicsKt__IntrinsicsKt
-kotlin.coroutines.jvm.internal.BaseContinuationImpl:
-    public abstract kotlin.coroutines.Continuation getCompletion()
 kotlin.coroutines.jvm.internal.Boxing
-kotlin.coroutines.jvm.internal.ContinuationImpl:
-    public abstract kotlin.coroutines.Continuation intercepted()
 kotlin.coroutines.jvm.internal.CoroutineStackFrame:
     public abstract java.lang.StackTraceElement getStackTraceElement()
 kotlin.coroutines.jvm.internal.DebugMetadataKt
@@ -38216,7 +38210,10 @@ kotlin.text.StringsKt___StringsJvmKt
 kotlin.text.StringsKt___StringsKt
 kotlinx.coroutines.AbstractTimeSource
 kotlinx.coroutines.AbstractTimeSourceKt
+kotlinx.coroutines.BlockingCoroutine:
+    public static java.lang.Object joinBlocking()
 kotlinx.coroutines.BuildersKt
+kotlinx.coroutines.BuildersKt__BuildersKt
 kotlinx.coroutines.BuildersKt__Builders_commonKt
 kotlinx.coroutines.CancelHandlerBase
 kotlinx.coroutines.CancellableContinuation:
@@ -38248,7 +38245,7 @@ kotlinx.coroutines.CancellableContinuationImpl:
     public static java.lang.String nameString()
     public static void parentCancelled$kotlinx_coroutines_core()
     public static boolean resetStateReusable()
-    public final void resume(java.lang.Object,kotlinx.coroutines.channels.BufferedChannel$onUndeliveredElementReceiveCancellationConstructor$1$1$1)
+    public final void resume(java.lang.Object,com.zhuogui.firewall.MainActivity$showProxyConfigDialog$updateVisibility$1)
     public final java.lang.Object tryResume()
     public static boolean tryResume()
     public static com.google.android.material.chip.ChipGroup$1 tryResumeImpl()
@@ -38294,7 +38291,7 @@ kotlinx.coroutines.CoroutineExceptionHandler:
     public abstract void handleException(kotlin.coroutines.CoroutineContext,java.lang.Throwable)
 kotlinx.coroutines.CoroutineExceptionHandlerKt
 kotlinx.coroutines.CoroutineId$$InternalSyntheticThrowCCEIfNotNull$17$f32d3c65e79275cc0e34133ff17172a91084ea4fa58ff765934c26285df444a4$0
-kotlinx.coroutines.CoroutineId$$InternalSyntheticThrowCCEIfNotNull$416$a04cd55831796dad4a4038d4eb866607cad4d88ce7c01ff729936a1ef385fb02$0
+kotlinx.coroutines.CoroutineId$$InternalSyntheticThrowCCEIfNotNull$380$a04cd55831796dad4a4038d4eb866607cad4d88ce7c01ff729936a1ef385fb02$0
 kotlinx.coroutines.CoroutineId$Key
 kotlinx.coroutines.CoroutineId
 kotlinx.coroutines.CoroutineName$Key
@@ -38337,7 +38334,18 @@ kotlinx.coroutines.DispatchedCoroutine:
     public static java.lang.Object getResult$kotlinx_coroutines_core()
     public static boolean tryResume$1()
     public static boolean trySuspend$1()
-kotlinx.coroutines.DispatchedTaskKt
+kotlinx.coroutines.DispatchedTaskKt$$InternalSyntheticThrowCCEIfNotNull$15$e09f4846f04d2a4262f23a5e4370d73569635f335ba644a08c320ce688964ac3$0
+kotlinx.coroutines.DispatchedTaskKt$$InternalSyntheticThrowCCEIfNotNull$7$668067e6b7bebaaa7c6c218f1e302f450b48bf87a06a98e7aa99b6dfb06dbbc4$0
+kotlinx.coroutines.DispatchedTaskKt:
+    public static final java.util.concurrent.CancellationException CancellationException(java.lang.String,java.lang.Throwable)
+    public static final synthetic kotlin.jvm.functions.Function0 access$nullArrayFactory()
+    public static synthetic void cancel$default(kotlin.coroutines.CoroutineContext)
+    public static synthetic void cancel$default(kotlinx.coroutines.Job)
+    public static final void cancelConsumed(kotlinx.coroutines.channels.ReceiveChannel,java.lang.Throwable)
+    public static synthetic void close$default(kotlinx.coroutines.channels.Channel)
+    public static final java.lang.Object emitAll(kotlinx.coroutines.flow.FlowCollector,kotlinx.coroutines.channels.Channel,kotlin.coroutines.Continuation)
+    public static final void ensureActive(kotlinx.coroutines.Job)
+    public static final kotlin.jvm.functions.Function0 nullArrayFactory$FlowKt__ZipKt()
 kotlinx.coroutines.DispatcherExecutor
 kotlinx.coroutines.Dispatchers:
     public static final kotlinx.coroutines.Dispatchers INSTANCE
@@ -38367,32 +38375,24 @@ kotlinx.coroutines.EventLoopImplBase:
     public abstract void setCompleted()
     public abstract boolean shouldUnpark()
 kotlinx.coroutines.EventLoopImplPlatform:
+    public static synthetic void decrementUseCount$default(kotlinx.coroutines.EventLoopImplPlatform)
     public abstract void decrementUseCount$kotlinx$coroutines$EventLoop()
     public static long delta(boolean)
     public abstract long delta$kotlinx$coroutines$EventLoop()
     public abstract void dispatchUnconfined$kotlinx$coroutines$EventLoop()
     public abstract long getNextTime()
     public abstract long getNextTime$kotlinx$coroutines$EventLoop()
+    public static synthetic void incrementUseCount$default(kotlinx.coroutines.EventLoopImplPlatform)
     public abstract void incrementUseCount$kotlinx$coroutines$EventLoop()
     public abstract boolean isUnconfinedLoopActive$kotlinx$coroutines$EventLoop()
     public final boolean isUnconfinedQueueEmpty()
     public abstract boolean isUnconfinedQueueEmpty$kotlinx$coroutines$EventLoop()
     public abstract boolean processUnconfinedEvent$kotlinx$coroutines$EventLoop()
     public abstract void reschedule()
+    public synthetic bridge abstract boolean shouldBeProcessedFromContext()
+    public abstract boolean shouldBeProcessedFromContext$kotlinx$coroutines$EventLoop()
     public final void unpark()
-kotlinx.coroutines.EventLoopKt$$InternalSyntheticThrowCCEIfNotNull$15$79fa48bc10b59a236e325a327235952d202f15eef61627d0930c88b5cbe4e8c0$0
-kotlinx.coroutines.EventLoopKt$$InternalSyntheticThrowCCEIfNotNull$7$2c50df3d8231748a22d24cd08bf69fd4b8397f4c96b7510cf4ad2c055a1c8bc0$0
-kotlinx.coroutines.EventLoopKt:
-    public static final java.util.concurrent.CancellationException CancellationException(java.lang.String,java.lang.Throwable)
-    public static final synthetic kotlin.jvm.functions.Function0 access$nullArrayFactory()
-    public static synthetic void cancel$default(kotlin.coroutines.CoroutineContext)
-    public static synthetic void cancel$default(kotlinx.coroutines.Job)
-    public static final void cancelConsumed(kotlinx.coroutines.channels.ReceiveChannel,java.lang.Throwable)
-    public static synthetic void close$default(kotlinx.coroutines.channels.Channel)
-    public static java.lang.Object constructor-impl$default()
-    public static final java.lang.Object emitAll(kotlinx.coroutines.flow.FlowCollector,kotlinx.coroutines.channels.Channel,kotlin.coroutines.Continuation)
-    public static final void ensureActive(kotlinx.coroutines.Job)
-    public static final kotlin.jvm.functions.Function0 nullArrayFactory$FlowKt__ZipKt()
+kotlinx.coroutines.EventLoopKt
 kotlinx.coroutines.EventLoop_commonKt:
     public static final com.google.android.material.chip.ChipGroup$1 DISPOSED_TASK
     public static final synthetic com.google.android.material.chip.ChipGroup$1 access$getCLOSED_EMPTY$p()
@@ -38490,7 +38490,6 @@ kotlinx.coroutines.JobSupportKt:
     public static final synthetic com.google.android.material.chip.ChipGroup$1 access$getSEALED$p()
     public static final synthetic com.google.android.material.chip.ChipGroup$1 access$getTOO_LATE_TO_CANCEL$p()
     public static final java.lang.Object boxIncomplete(java.lang.Object)
-    public static final java.lang.Object unboxState(java.lang.Object)
 kotlinx.coroutines.MainCoroutineDispatcher:
     public abstract kotlinx.coroutines.MainCoroutineDispatcher getImmediate()
     public abstract java.lang.String toStringInternalImpl()
@@ -38502,10 +38501,11 @@ kotlinx.coroutines.ParentJob:
 kotlinx.coroutines.ResumeOnCompletion
 kotlinx.coroutines.SupervisorKt
 kotlinx.coroutines.ThreadContextElement:
-    public abstract void restoreThreadContext(java.lang.Object)
+    public abstract void restoreThreadContext$1()
     public abstract java.lang.String updateThreadContext(kotlin.coroutines.CoroutineContext)
 kotlinx.coroutines.ThreadLocalEventLoop:
     public static final kotlinx.coroutines.ThreadLocalEventLoop INSTANCE
+    public static kotlinx.coroutines.EventLoopImplPlatform currentOrNull$kotlinx_coroutines_core()
     public static void resetEventLoop$kotlinx_coroutines_core()
     public static void setEventLoop$kotlinx_coroutines_core()
 kotlinx.coroutines.TimeoutCancellationException
@@ -38536,12 +38536,12 @@ kotlinx.coroutines.channels.BufferedChannel$$InternalSyntheticBackportWithForwar
 kotlinx.coroutines.channels.BufferedChannel$$InternalSyntheticBackportWithForwarding$1$a82bd6526252716f45c1e2dc8f515c9caee29cc0b548304b3857573170eae365$0
 kotlinx.coroutines.channels.BufferedChannel$$InternalSyntheticBackportWithForwarding$1$bcbc3f28be89ee994214095173536a5f483e6b95f4970358df5efac2ce97a0ff$0
 kotlinx.coroutines.channels.BufferedChannel$$InternalSyntheticBackportWithForwarding$2$afac5bfa0554c7bd1dc60b3313389abb7b317b180ca8e388b630c612c70cbe61$0
-kotlinx.coroutines.channels.BufferedChannel$$InternalSyntheticThrowCCEIfNotNull$138$1639c53f7cf02c6177b692dfa8445c6677e1ac78b67d70ed1d641ef9e1161dd0$0
-kotlinx.coroutines.channels.BufferedChannel$$InternalSyntheticThrowCCEIfNotNull$138$1639c53f7cf02c6177b692dfa8445c6677e1ac78b67d70ed1d641ef9e1161dd0$1
-kotlinx.coroutines.channels.BufferedChannel$$InternalSyntheticThrowCCEIfNotNull$138$1639c53f7cf02c6177b692dfa8445c6677e1ac78b67d70ed1d641ef9e1161dd0$2
-kotlinx.coroutines.channels.BufferedChannel$$InternalSyntheticThrowCCEIfNotNull$139$edcb07344cacdca133f07998137684fa55aa298d59ffec8eeb41cfbef5225310$0
-kotlinx.coroutines.channels.BufferedChannel$$InternalSyntheticThrowCCEIfNotNull$157$7b9639faab7ec0b0e8206097997b0e0f2dbfbe319af675383e1377179aef4bb5$0
-kotlinx.coroutines.channels.BufferedChannel$$InternalSyntheticThrowCCEIfNotNull$157$7b9639faab7ec0b0e8206097997b0e0f2dbfbe319af675383e1377179aef4bb5$1
+kotlinx.coroutines.channels.BufferedChannel$$InternalSyntheticThrowCCEIfNotNull$199$7b9639faab7ec0b0e8206097997b0e0f2dbfbe319af675383e1377179aef4bb5$0
+kotlinx.coroutines.channels.BufferedChannel$$InternalSyntheticThrowCCEIfNotNull$199$7b9639faab7ec0b0e8206097997b0e0f2dbfbe319af675383e1377179aef4bb5$1
+kotlinx.coroutines.channels.BufferedChannel$$InternalSyntheticThrowCCEIfNotNull$44$1639c53f7cf02c6177b692dfa8445c6677e1ac78b67d70ed1d641ef9e1161dd0$0
+kotlinx.coroutines.channels.BufferedChannel$$InternalSyntheticThrowCCEIfNotNull$44$1639c53f7cf02c6177b692dfa8445c6677e1ac78b67d70ed1d641ef9e1161dd0$1
+kotlinx.coroutines.channels.BufferedChannel$$InternalSyntheticThrowCCEIfNotNull$44$1639c53f7cf02c6177b692dfa8445c6677e1ac78b67d70ed1d641ef9e1161dd0$2
+kotlinx.coroutines.channels.BufferedChannel$$InternalSyntheticThrowCCEIfNotNull$45$edcb07344cacdca133f07998137684fa55aa298d59ffec8eeb41cfbef5225310$0
 kotlinx.coroutines.channels.BufferedChannel$BufferedChannelIterator:
     public static java.lang.Object hasNextOnNoWaiterSuspend()
     public static boolean onClosedHasNext()
@@ -38549,9 +38549,8 @@ kotlinx.coroutines.channels.BufferedChannel$BufferedChannelIterator:
     public static boolean tryResumeHasNext()
     public static void tryResumeHasNextOnClosedChannel()
 kotlinx.coroutines.channels.BufferedChannel$SendBroadcast
-kotlinx.coroutines.channels.BufferedChannel$onUndeliveredElementReceiveCancellationConstructor$1$1$$InternalSyntheticThrowCCEIfNotNull$11$33f0121c0e7c81edb2b1f5a87dc0545c8871fd960e5cb9d725f4214099f5ed10$0
-kotlinx.coroutines.channels.BufferedChannel$onUndeliveredElementReceiveCancellationConstructor$1$1$1:
-    public void <init>(java.lang.Object,kotlinx.coroutines.channels.BufferedChannel)
+kotlinx.coroutines.channels.BufferedChannel$onUndeliveredElementReceiveCancellationConstructor$1$1$$InternalSyntheticThrowCCEIfNotNull$10$33f0121c0e7c81edb2b1f5a87dc0545c8871fd960e5cb9d725f4214099f5ed10$0
+kotlinx.coroutines.channels.BufferedChannel$onUndeliveredElementReceiveCancellationConstructor$1$1$1
 kotlinx.coroutines.channels.BufferedChannel$onUndeliveredElementReceiveCancellationConstructor$1$1
 kotlinx.coroutines.channels.BufferedChannel$receiveCatchingOnNoWaiterSuspend$1:
     public int I$0
@@ -38673,7 +38672,7 @@ kotlinx.coroutines.flow.FlowKt__ShareKt$launchSharing$1$2$WhenMappings
 kotlinx.coroutines.flow.FlowKt__ShareKt$launchSharing$1$2:
     public static java.lang.Object invoke$11()
 kotlinx.coroutines.flow.FlowKt__ShareKt$launchSharing$1:
-    public final java.lang.Object invoke$2()
+    public final java.lang.Object invoke(kotlinx.coroutines.CoroutineScope,kotlin.coroutines.Continuation)
 kotlinx.coroutines.flow.FlowKt__ShareKt
 kotlinx.coroutines.flow.FlowKt__ZipKt$combine$$inlined$combineUnsafe$FlowKt__ZipKt$3$2
 kotlinx.coroutines.flow.FlowKt__ZipKt$nullArrayFactory$1:
@@ -38721,7 +38720,7 @@ kotlinx.coroutines.flow.StartedLazily$command$1:
 kotlinx.coroutines.flow.StartedLazily
 kotlinx.coroutines.flow.StateFlow:
     public abstract java.lang.Object getValue()
-kotlinx.coroutines.flow.StateFlowImpl$$InternalSyntheticThrowCCEIfNotNull$186$48f8e1a998bfe838c6c4c78d934377956702ea666a83e7852d7dcc1778b7fce1$0
+kotlinx.coroutines.flow.StateFlowImpl$$InternalSyntheticThrowCCEIfNotNull$128$48f8e1a998bfe838c6c4c78d934377956702ea666a83e7852d7dcc1778b7fce1$0
 kotlinx.coroutines.flow.StateFlowImpl:
     public static kotlinx.coroutines.flow.StateFlowSlot createSlot()
     public static kotlinx.coroutines.flow.StateFlowSlot[] createSlotArray()
@@ -38746,7 +38745,7 @@ kotlinx.coroutines.flow.internal.AbstractSharedFlow:
     public abstract int getNCollectors()
     public abstract kotlinx.coroutines.flow.internal.AbstractSharedFlowSlot[] getSlots()
 kotlinx.coroutines.flow.internal.ChannelFlow$collect$2:
-    public final java.lang.Object invoke$2()
+    public final java.lang.Object invoke(kotlinx.coroutines.CoroutineScope,kotlin.coroutines.Continuation)
 kotlinx.coroutines.flow.internal.ChannelFlow$collectToFun$1:
     public static java.lang.Object invoke$12()
 kotlinx.coroutines.flow.internal.ChannelFlow:
@@ -38764,15 +38763,15 @@ kotlinx.coroutines.flow.internal.ChannelFlowOperator:
     public abstract java.lang.Object collectWithContextUndispatched()
 kotlinx.coroutines.flow.internal.ChannelFlowOperatorImpl
 kotlinx.coroutines.flow.internal.ChannelFlowTransformLatest$flowCollect$3$1$2:
-    public final java.lang.Object invoke$2()
+    public final java.lang.Object invoke(kotlinx.coroutines.CoroutineScope,kotlin.coroutines.Continuation)
 kotlinx.coroutines.flow.internal.ChannelFlowTransformLatest$flowCollect$3$1$emit$1:
     public kotlinx.coroutines.Job L$2
 kotlinx.coroutines.flow.internal.ChannelFlowTransformLatest$flowCollect$3:
-    public final java.lang.Object invoke$2()
+    public final java.lang.Object invoke(kotlinx.coroutines.CoroutineScope,kotlin.coroutines.Continuation)
 kotlinx.coroutines.flow.internal.CombineKt$combineInternal$2$1:
-    public final java.lang.Object invoke$2()
+    public final java.lang.Object invoke(kotlinx.coroutines.CoroutineScope,kotlin.coroutines.Continuation)
 kotlinx.coroutines.flow.internal.CombineKt$combineInternal$2:
-    public final java.lang.Object invoke$2()
+    public final java.lang.Object invoke(kotlinx.coroutines.CoroutineScope,kotlin.coroutines.Continuation)
 kotlinx.coroutines.flow.internal.CombineKt
 kotlinx.coroutines.flow.internal.FlowCoroutineKt
 kotlinx.coroutines.flow.internal.FlowExceptions_commonKt
@@ -38793,7 +38792,7 @@ kotlinx.coroutines.flow.internal.SafeCollector_commonKt$checkContext$result$1
 kotlinx.coroutines.flow.internal.SafeCollector_commonKt
 kotlinx.coroutines.flow.internal.StackFrameContinuation:
     public final java.lang.StackTraceElement getStackTraceElement()
-kotlinx.coroutines.flow.internal.SubscriptionCountStateFlow$$InternalSyntheticThrowCCEIfNotNull$164$5daab7cd5c6efad88006286e9bfb8f6cc3d17abcc745d9103ef3976d50e7c17b$0
+kotlinx.coroutines.flow.internal.SubscriptionCountStateFlow$$InternalSyntheticThrowCCEIfNotNull$58$5daab7cd5c6efad88006286e9bfb8f6cc3d17abcc745d9103ef3976d50e7c17b$0
 kotlinx.coroutines.flow.internal.SubscriptionCountStateFlow:
     public final int bufferCapacity
     public final int onBufferOverflow
@@ -38901,18 +38900,19 @@ kotlinx.coroutines.internal.ExceptionsConstructorKt$safeCtor$1
 kotlinx.coroutines.internal.ExceptionsConstructorKt
 kotlinx.coroutines.internal.FastServiceLoader
 kotlinx.coroutines.internal.FastServiceLoaderKt
-kotlinx.coroutines.internal.InlineList
-kotlinx.coroutines.internal.LimitedDispatcher$Worker
-kotlinx.coroutines.internal.LimitedDispatcher:
-    public final synthetic kotlinx.coroutines.Delay $$delegate_0
-kotlinx.coroutines.internal.LimitedDispatcherKt:
-    public static final void callUndeliveredElement(kotlin.jvm.functions.Function1,java.lang.Object,kotlin.coroutines.CoroutineContext)
+kotlinx.coroutines.internal.InlineList:
     public static synthetic androidx.fragment.app.Fragment$InstantiationException callUndeliveredElementCatchingException$default(kotlin.jvm.functions.Function1,java.lang.Object)
     public static final void checkParallelism(int)
+    public static java.lang.Object constructor-impl$default()
+    public static final void dispatcherFailure(kotlinx.coroutines.AbstractCoroutine,java.lang.Throwable)
     public static final int systemProp(int,int,int,java.lang.String)
     public static final java.lang.String systemProp(java.lang.String)
     public static final boolean systemProp(java.lang.String,boolean)
     public static synthetic long systemProp$default(java.lang.String,long)
+kotlinx.coroutines.internal.LimitedDispatcher$Worker
+kotlinx.coroutines.internal.LimitedDispatcher:
+    public final synthetic kotlinx.coroutines.Delay $$delegate_0
+kotlinx.coroutines.internal.LimitedDispatcherKt
 kotlinx.coroutines.internal.LockFreeLinkedListHead
 kotlinx.coroutines.internal.LockFreeLinkedListKt:
     public static final java.lang.Object getCONDITION_FALSE()
@@ -38968,8 +38968,8 @@ kotlinx.coroutines.internal.StackTraceRecoveryKt:
 kotlinx.coroutines.internal.Symbol
 kotlinx.coroutines.internal.SystemPropsKt
 kotlinx.coroutines.internal.SystemPropsKt__SystemProps_commonKt
-kotlinx.coroutines.internal.ThreadContextKt$countAll$1$$InternalSyntheticThrowCCEIfNotNull$416$a546074a2ed249d1eabefdc79e18209b1ee65e7faf56680f7461c253f28dd8e6$0
-kotlinx.coroutines.internal.ThreadContextKt$countAll$1$$InternalSyntheticThrowCCEIfNotNull$416$a546074a2ed249d1eabefdc79e18209b1ee65e7faf56680f7461c253f28dd8e6$2
+kotlinx.coroutines.internal.ThreadContextKt$countAll$1$$InternalSyntheticThrowCCEIfNotNull$380$a546074a2ed249d1eabefdc79e18209b1ee65e7faf56680f7461c253f28dd8e6$0
+kotlinx.coroutines.internal.ThreadContextKt$countAll$1$$InternalSyntheticThrowCCEIfNotNull$380$a546074a2ed249d1eabefdc79e18209b1ee65e7faf56680f7461c253f28dd8e6$2
 kotlinx.coroutines.internal.ThreadContextKt$countAll$1:
     public static kotlinx.coroutines.internal.ThreadState invoke()
     public static java.lang.Object invoke$14()

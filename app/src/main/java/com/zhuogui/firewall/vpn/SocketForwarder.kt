@@ -54,10 +54,11 @@ class SocketForwarder(
                 tunWrite = tunWrite
             )
             tcpSessions[key] = session
+            session.handleClientPacket(info, rawPacket) // 先处理 SYN 初始化 Seq 和 Ack
             session.connectRemote()
+        } else {
+            session.handleClientPacket(info, rawPacket)
         }
-        
-        session.handleClientPacket(info, rawPacket)
     }
 
     /**
@@ -108,7 +109,7 @@ class SocketForwarder(
         val key: String,
         val srcIp: String, val srcPort: Int,
         val dstIp: String, val dstPort: Int,
-        val packageName: String,
+        var packageName: String,
         private val forwarder: SocketForwarder,
         private val tunWrite: (ByteBuffer) -> Unit
     ) {
@@ -119,13 +120,67 @@ class SocketForwarder(
         
         var remoteSocket: Socket? = null
         val active = AtomicBoolean(true)
+        private val pendingClientData = ArrayList<ByteArray>()
 
         fun connectRemote() {
+            // 1. 立即向客户端发送 SYN-ACK 建立 TCP 连接，使用户态 socket 变为 ESTABLISHED 状态
+            sendSynAck()
+
             thread(name = "TcpConnect-$key") {
                 try {
+                    // 等待客户端响应并建立连接状态以使系统记录连接所有者
+                    Thread.sleep(20)
+
+                    // 2. 此时连接已建立，getConnectionOwnerUid 将能够 100% 成功返回真实的 UID
+                    val realUid = ConnectionManager.getUidForConnection(
+                        context = com.zhuogui.firewall.ZhuoguiApp.instance,
+                        protocol = PacketHandler.PROTO_TCP,
+                        srcIp = srcIp, srcPort = srcPort,
+                        dstIp = dstIp, dstPort = dstPort
+                    )
+
+                    val resolvedPackageName = if (realUid >= 0) {
+                        val pm = com.zhuogui.firewall.ZhuoguiApp.instance.packageManager
+                        pm.getPackagesForUid(realUid)?.firstOrNull() ?: packageName
+                    } else {
+                        packageName
+                    }
+                    packageName = resolvedPackageName
+
+                    // 3. 安全审计：如果检测出真实包名已被列入黑名单，则立即斩断连接
+                    // （由系统服务层判定 checkBlocked，避免黑客应用伪装）
+                    val db = com.zhuogui.firewall.ZhuoguiApp.instance.database
+                    val isBlocked = try {
+                        kotlinx.coroutines.runBlocking {
+                            val app = db.appInfoDao().getByPackage(packageName)
+                            app?.allowed == false
+                        }
+                    } catch (e: Exception) {
+                        false
+                    }
+
+                    if (isBlocked) {
+                        Log.i("TcpSession", "Blocked newly resolved package: $packageName")
+                        sendRst()
+                        close()
+                        return@thread
+                    }
+
                     val proxy = forwarder.proxyConfig?.takeIf { it.enabled }
-                    val socket = if (proxy != null) {
-                        Socks5Proxy.connect(proxy, dstIp, dstPort, 10000, forwarder.protectSocket)
+                    // 确认该客户端是否被用户配置为直连（useProxy = false）
+                    val isProxyEnabledForApp = try {
+                        kotlinx.coroutines.runBlocking {
+                            val app = db.appInfoDao().getByPackage(packageName)
+                            app?.useProxy ?: true
+                        }
+                    } catch (e: Exception) {
+                        true
+                    }
+
+                    // 4. 选择直连还是走代理：代理应用本身必须直连，用户设置为直连的也直连
+                    val finalProxy = if (proxy != null && isProxyEnabledForApp && packageName != proxy.proxyPackage) proxy else null
+                    val socket = if (finalProxy != null) {
+                        Socks5Proxy.connect(finalProxy, dstIp, dstPort, 10000, forwarder.protectSocket)
                     } else {
                         val s = Socket()
                         forwarder.protectSocket?.invoke(s)
@@ -139,8 +194,15 @@ class SocketForwarder(
                     }
                     remoteSocket = socket
                     
-                    // 连接成功，向客户端回复 SYN-ACK 包完成三次握手
-                    sendSynAck()
+                    // 5. 连接建立，把之前缓存的客户端写数据全部推送给远端
+                    synchronized(pendingClientData) {
+                        val out = socket.getOutputStream()
+                        for (data in pendingClientData) {
+                            out.write(data)
+                        }
+                        out.flush()
+                        pendingClientData.clear()
+                    }
                     
                     // 启动线程循环读取远端服务器发回的数据，打包成 TCP 回复注入 TUN
                     val input = socket.getInputStream()
@@ -173,16 +235,24 @@ class SocketForwarder(
                 rawPacket.get(payload)
                 rawPacket.position(pos)
 
-                try {
-                    remoteSocket?.getOutputStream()?.let { out ->
+                val socket = remoteSocket
+                if (socket != null) {
+                    try {
+                        val out = socket.getOutputStream()
                         out.write(payload)
                         out.flush()
+                        serverAck = info.tcpSeq + info.payloadLength
+                        sendAck()
+                    } catch (e: Exception) {
+                        sendRst()
+                        close()
+                    }
+                } else {
+                    synchronized(pendingClientData) {
+                        pendingClientData.add(payload)
                     }
                     serverAck = info.tcpSeq + info.payloadLength
                     sendAck()
-                } catch (e: Exception) {
-                    sendRst()
-                    close()
                 }
             } else if (info.isFIN) {
                 serverAck = info.tcpSeq + 1

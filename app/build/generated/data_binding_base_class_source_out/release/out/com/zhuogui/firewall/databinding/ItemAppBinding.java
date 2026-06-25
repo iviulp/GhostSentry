@@ -27,6 +27,9 @@ public final class ItemAppBinding implements ViewBinding {
   public final MaterialButton btnBlock;
 
   @NonNull
+  public final MaterialButton btnProxy;
+
+  @NonNull
   public final TextView tvAppName;
 
   @NonNull
@@ -36,11 +39,12 @@ public final class ItemAppBinding implements ViewBinding {
   public final TextView tvStatus;
 
   private ItemAppBinding(@NonNull MaterialCardView rootView, @NonNull MaterialButton btnAllow,
-      @NonNull MaterialButton btnBlock, @NonNull TextView tvAppName,
-      @NonNull TextView tvPackageName, @NonNull TextView tvStatus) {
+      @NonNull MaterialButton btnBlock, @NonNull MaterialButton btnProxy,
+      @NonNull TextView tvAppName, @NonNull TextView tvPackageName, @NonNull TextView tvStatus) {
     this.rootView = rootView;
     this.btnAllow = btnAllow;
     this.btnBlock = btnBlock;
+    this.btnProxy = btnProxy;
     this.tvAppName = tvAppName;
     this.tvPackageName = tvPackageName;
     this.tvStatus = tvStatus;
@@ -85,6 +89,12 @@ public final class ItemAppBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.btnProxy;
+      MaterialButton btnProxy = ViewBindings.findChildViewById(rootView, id);
+      if (btnProxy == null) {
+        break missingId;
+      }
+
       id = R.id.tvAppName;
       TextView tvAppName = ViewBindings.findChildViewById(rootView, id);
       if (tvAppName == null) {
@@ -103,8 +113,8 @@ public final class ItemAppBinding implements ViewBinding {
         break missingId;
       }
 
-      return new ItemAppBinding((MaterialCardView) rootView, btnAllow, btnBlock, tvAppName,
-          tvPackageName, tvStatus);
+      return new ItemAppBinding((MaterialCardView) rootView, btnAllow, btnBlock, btnProxy,
+          tvAppName, tvPackageName, tvStatus);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

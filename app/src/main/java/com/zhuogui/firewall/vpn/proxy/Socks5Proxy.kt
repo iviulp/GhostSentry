@@ -31,7 +31,8 @@ object Socks5Proxy {
     data class ProxyConfig(
         val host: String,
         val port: Int,
-        val enabled: Boolean = false
+        val enabled: Boolean = false,
+        val proxyPackage: String = ""
     )
 
     /**
@@ -48,7 +49,17 @@ object Socks5Proxy {
         try {
             // 1. 连接到代理服务器
             val socket = Socket()
-            protect?.invoke(socket)
+            val isLocalhost = try {
+                val addr = java.net.InetAddress.getByName(config.host)
+                addr.isLoopbackAddress
+            } catch (e: Exception) {
+                config.host.equals("127.0.0.1", ignoreCase = true) ||
+                config.host.equals("localhost", ignoreCase = true) ||
+                config.host.equals("::1", ignoreCase = true)
+            }
+            if (!isLocalhost) {
+                protect?.invoke(socket)
+            }
             socket.connect(InetSocketAddress(config.host, config.port), timeout)
             socket.soTimeout = timeout
 

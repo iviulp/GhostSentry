@@ -60,6 +60,7 @@ class FirewallVpnService : VpnService() {
         private const val PREF_PROXY_HOST = "proxy_host"
         private const val PREF_PROXY_PORT = "proxy_port"
         private const val PREF_PROXY_ENABLED = "proxy_enabled"
+        private const val PREF_PROXY_PACKAGE = "proxy_package"
 
         /**
          * 通知 VPN 服务重新加载规则（由 UI 层调用）
@@ -76,19 +77,21 @@ class FirewallVpnService : VpnService() {
             return Socks5Proxy.ProxyConfig(
                 host = prefs.getString(PREF_PROXY_HOST, "") ?: "",
                 port = prefs.getInt(PREF_PROXY_PORT, 1080),
-                enabled = prefs.getBoolean(PREF_PROXY_ENABLED, false)
+                enabled = prefs.getBoolean(PREF_PROXY_ENABLED, false),
+                proxyPackage = prefs.getString(PREF_PROXY_PACKAGE, "") ?: ""
             )
         }
 
         /**
          * 设置代理配置
          */
-        fun setProxyConfig(host: String, port: Int, enabled: Boolean) {
+        fun setProxyConfig(host: String, port: Int, enabled: Boolean, proxyPackage: String) {
             val prefs = ZhuoguiApp.instance.getSharedPreferences("vpn_proxy", Context.MODE_PRIVATE)
             prefs.edit()
                 .putString(PREF_PROXY_HOST, host)
                 .putInt(PREF_PROXY_PORT, port)
                 .putBoolean(PREF_PROXY_ENABLED, enabled)
+                .putString(PREF_PROXY_PACKAGE, proxyPackage)
                 .apply()
         }
     }
@@ -100,13 +103,17 @@ class FirewallVpnService : VpnService() {
     private lateinit var repository: FirewallRepository
     private lateinit var forwarder: SocketForwarder
 
+    // 活跃代理配置缓存，供极速匹配
+    @Volatile
+    private var activeProxyConfig: Socks5Proxy.ProxyConfig? = null
+
     // 全局阻止规则缓存
     private val globalBlockRules = ConcurrentHashMap<String, Boolean>()
 
     // 按 APP 分组的阻止规则缓存
     private val appBlockRules = ConcurrentHashMap<String, ConcurrentHashMap<String, Boolean>>()
 
-    // 被完全阻止的 APP 集合
+    // 被完全阻止的学生 APP 集合
     private val blockedApps = ConcurrentHashMap.newKeySet<String>()
 
     override fun onCreate() {
@@ -134,7 +141,6 @@ class FirewallVpnService : VpnService() {
         if (active.get()) return
 
         try {
-            // 创建 TUN 接口
             val builder = Builder()
                 .setSession("捉鬼")
                 .addAddress(VPN_ADDRESS, 24)
@@ -144,6 +150,32 @@ class FirewallVpnService : VpnService() {
                 .setMtu(VPN_MTU)
                 .setBlocking(true)
                 .addDisallowedApplication(packageName) // 排除自身
+
+            val proxyConfig = loadProxyConfig()
+
+            // 排除常见代理/VPN应用以及用户自定义配置的代理应用，以防止本地回路冲突
+            val commonProxies = mutableListOf(
+                "com.github.kr328.clash",
+                "com.github.kr328.clash.meta",
+                "com.v2ray.ang",
+                "org.shadowsocks.android",
+                "com.github.shadowsocks",
+                "com.singbox.android",
+                "com.xray.ang",
+                "com.trojan.link"
+            )
+            proxyConfig?.proxyPackage?.let {
+                if (it.isNotEmpty() && it !in commonProxies) {
+                    commonProxies.add(it)
+                }
+            }
+            for (proxyPkg in commonProxies) {
+                try {
+                    builder.addDisallowedApplication(proxyPkg)
+                } catch (e: Exception) {
+                    // 忽略未安装的应用
+                }
+            }
 
             tunFd = builder.establish()
             if (tunFd == null) {
@@ -157,8 +189,6 @@ class FirewallVpnService : VpnService() {
             // 前台通知
             startForeground(NOTIFICATION_ID, buildNotification())
 
-            // 初始化转发器（带代理支持和 protect 回调）
-            val proxyConfig = loadProxyConfig()
             forwarder = SocketForwarder(
                 tunWrite = { buffer -> writeToTun(buffer) },
                 protectSocket = { socket ->
@@ -357,6 +387,12 @@ class FirewallVpnService : VpnService() {
      * 检查是否应该阻止该连接
      */
     private fun checkBlocked(packageName: String, destIp: String, domain: String?): Boolean {
+        // 如果是配置的本地代理应用，必须完全放开网络权限，绝对不能阻止
+        val config = activeProxyConfig
+        if (config != null && config.enabled && packageName == config.proxyPackage) {
+            return false
+        }
+
         // 1. 检查 APP 是否被完全阻止
         if (packageName in blockedApps) return true
 
@@ -377,6 +413,12 @@ class FirewallVpnService : VpnService() {
      */
     private suspend fun loadRules() {
         try {
+            val latestConfig = loadProxyConfig()
+            activeProxyConfig = latestConfig
+            if (::forwarder.isInitialized) {
+                forwarder.proxyConfig = latestConfig
+            }
+
             val db = ZhuoguiApp.instance.database
 
             // 1. 加载 APP 阻止状态到临时集合
@@ -527,8 +569,9 @@ class FirewallVpnService : VpnService() {
         if (!enabled) return null
         val host = prefs.getString(PREF_PROXY_HOST, "") ?: ""
         val port = prefs.getInt(PREF_PROXY_PORT, 1080)
+        val proxyPackage = prefs.getString(PREF_PROXY_PACKAGE, "") ?: ""
         if (host.isEmpty()) return null
-        return Socks5Proxy.ProxyConfig(host = host, port = port, enabled = true)
+        return Socks5Proxy.ProxyConfig(host = host, port = port, enabled = true, proxyPackage = proxyPackage)
     }
 
     override fun onDestroy() {
