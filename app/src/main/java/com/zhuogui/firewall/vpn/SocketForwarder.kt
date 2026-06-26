@@ -179,10 +179,10 @@ class SocketForwarder(
                     val isProxyEnabledForApp = try {
                         kotlinx.coroutines.runBlocking {
                             val app = db.appInfoDao().getByPackage(packageName)
-                            app?.useProxy ?: true
+                            app?.useProxy ?: false
                         }
                     } catch (e: Exception) {
-                        true
+                        false
                     }
 
                     // 4. 选择直连还是走代理：代理应用本身必须直连，用户设置为直连的也直连

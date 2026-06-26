@@ -18,7 +18,7 @@ data class AppInfo(
     val wifiAllowed: Boolean? = null,
     /** 是否允许移动数据联网 */
     val mobileAllowed: Boolean? = null,
-    /** 是否使用上游代理 (默认 true) */
-    val useProxy: Boolean = true,
+    /** 是否使用上游代理 (默认 false) */
+    val useProxy: Boolean = false,
     val lastSeen: Long = System.currentTimeMillis()
 )
