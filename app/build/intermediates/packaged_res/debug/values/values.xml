@@ -13,7 +13,7 @@
     <string name="add_rule_pkg_hint">APP 包名（* 表示所有 APP）</string>
     <string name="all_apps">所有 APP</string>
     <string name="allowed">允许</string>
-    <string name="app_name">捉鬼</string>
+    <string name="app_name">GhostSentry</string>
     <string name="appbar_scrolling_view_behavior">com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior</string>
     <string name="block_app">阻止此 APP 所有联网</string>
     <string name="blocked">阻止</string>
