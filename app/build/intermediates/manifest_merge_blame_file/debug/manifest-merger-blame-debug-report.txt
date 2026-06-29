@@ -2,7 +2,7 @@
 2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
 3    package="com.zhuogui.firewall"
 4    android:versionCode="1"
-5    android:versionName="2026.06.29.154727" >
+5    android:versionName="2026.06.29.172936" >
 6
 7    <uses-sdk
 8        android:minSdkVersion="26"

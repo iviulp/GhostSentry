@@ -129,14 +129,19 @@ class AppDetailFragment : Fragment() {
                                 "ip" -> log.destIp
                                 else -> log.destDomain ?: log.destIp
                             }
-                            val type = if (currentMode == "ip" || log.destDomain == null) "ip" else "domain"
-                            val rule = FirewallRule(
-                                packageName = packageName,
-                                target = target,
-                                blocked = true,
-                                type = type
-                            )
-                            viewModel.addRule(rule)
+                            val exists = viewModel.allRules.value.any { rule ->
+                                rule.packageName == packageName && rule.target == target && rule.blocked
+                            }
+                            if (!exists) {
+                                val type = if (currentMode == "ip" || log.destDomain == null) "ip" else "domain"
+                                val rule = FirewallRule(
+                                    packageName = packageName,
+                                    target = target,
+                                    blocked = true,
+                                    type = type
+                                )
+                                viewModel.addRule(rule)
+                            }
                         }
                     }
                     .setNegativeButton("取消", null)
@@ -200,6 +205,31 @@ class AppDetailFragment : Fragment() {
                         log.copy(blocked = true, status = "BLOCKED")
                     } else {
                         log.copy(blocked = false, status = if (log.status == "BLOCKED") "SUCCESS" else log.status)
+                    }
+                }.toMutableList()
+
+                // 如果是在“已阻止”标签页，且有一些规则没有对应的历史日志，则生成虚拟日志项展示，以便用户可以看到并“放行”
+                if (activeTab == 1) {
+                    val appRules = rules.filter { (it.packageName == packageName || it.packageName == "*") && it.blocked }
+                    appRules.forEach { rule ->
+                        val exists = mappedLogs.any { log ->
+                            log.destIp == rule.target || log.destDomain == rule.target
+                        }
+                        if (!exists) {
+                            val virtualLog = ConnectionLog(
+                                id = -rule.id,
+                                packageName = packageName,
+                                appName = appName,
+                                destIp = if (rule.type == "ip") rule.target else "0.0.0.0",
+                                destPort = 0,
+                                destDomain = if (rule.type == "domain") rule.target else null,
+                                protocol = "ALL",
+                                blocked = true,
+                                status = "BLOCKED",
+                                timestamp = rule.createdAt
+                            )
+                            mappedLogs.add(virtualLog)
+                        }
                     }
                 }
 
@@ -363,14 +393,16 @@ class AppDetailFragment : Fragment() {
         }
     }
 
-    /**
-     * 阻止连接：创建 FirewallRule
-     */
     private fun blockConnection(log: ConnectionLog) {
         val target = when (currentMode) {
             "ip" -> log.destIp
             else -> log.destDomain ?: log.destIp
         }
+        val exists = viewModel.allRules.value.any { rule ->
+            rule.packageName == packageName && rule.target == target && rule.blocked
+        }
+        if (exists) return
+
         val type = if (currentMode == "ip" || log.destDomain == null) "ip" else "domain"
         val rule = FirewallRule(
             packageName = packageName,

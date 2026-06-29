@@ -137,8 +137,12 @@ class ConnectionAdapter(
 
         override fun areContentsTheSame(oldItem: ConnectionLog, newItem: ConnectionLog): Boolean {
             return oldItem.blocked == newItem.blocked &&
+                    oldItem.status == newItem.status &&
                     oldItem.destPort == newItem.destPort &&
-                    oldItem.protocol == newItem.protocol
+                    oldItem.protocol == newItem.protocol &&
+                    oldItem.timestamp == newItem.timestamp &&
+                    oldItem.destIp == newItem.destIp &&
+                    oldItem.destDomain == newItem.destDomain
         }
     }
 }
