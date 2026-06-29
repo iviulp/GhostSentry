@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.tabs.TabLayout;
@@ -23,6 +24,12 @@ import java.lang.String;
 public final class FragmentAppDetailBinding implements ViewBinding {
   @NonNull
   private final LinearLayout rootView;
+
+  @NonNull
+  public final MaterialButton btnAllowAll;
+
+  @NonNull
+  public final MaterialButton btnBlockAll;
 
   @NonNull
   public final Chip chipAll;
@@ -69,13 +76,17 @@ public final class FragmentAppDetailBinding implements ViewBinding {
   @NonNull
   public final TextView tvPackageName;
 
-  private FragmentAppDetailBinding(@NonNull LinearLayout rootView, @NonNull Chip chipAll,
-      @NonNull Chip chipDeduplicate, @NonNull Chip chipDomain, @NonNull ChipGroup chipGroupMode,
-      @NonNull ChipGroup chipGroupSort, @NonNull Chip chipIp, @NonNull Chip chipSortDomain,
-      @NonNull Chip chipSortIp, @NonNull Chip chipSortTime, @NonNull RecyclerView recyclerView,
-      @NonNull TabLayout tabLayout, @NonNull MaterialToolbar toolbar, @NonNull TextView tvAppName,
-      @NonNull TextView tvEmpty, @NonNull TextView tvPackageName) {
+  private FragmentAppDetailBinding(@NonNull LinearLayout rootView,
+      @NonNull MaterialButton btnAllowAll, @NonNull MaterialButton btnBlockAll,
+      @NonNull Chip chipAll, @NonNull Chip chipDeduplicate, @NonNull Chip chipDomain,
+      @NonNull ChipGroup chipGroupMode, @NonNull ChipGroup chipGroupSort, @NonNull Chip chipIp,
+      @NonNull Chip chipSortDomain, @NonNull Chip chipSortIp, @NonNull Chip chipSortTime,
+      @NonNull RecyclerView recyclerView, @NonNull TabLayout tabLayout,
+      @NonNull MaterialToolbar toolbar, @NonNull TextView tvAppName, @NonNull TextView tvEmpty,
+      @NonNull TextView tvPackageName) {
     this.rootView = rootView;
+    this.btnAllowAll = btnAllowAll;
+    this.btnBlockAll = btnBlockAll;
     this.chipAll = chipAll;
     this.chipDeduplicate = chipDeduplicate;
     this.chipDomain = chipDomain;
@@ -120,6 +131,18 @@ public final class FragmentAppDetailBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
+      id = R.id.btnAllowAll;
+      MaterialButton btnAllowAll = ViewBindings.findChildViewById(rootView, id);
+      if (btnAllowAll == null) {
+        break missingId;
+      }
+
+      id = R.id.btnBlockAll;
+      MaterialButton btnBlockAll = ViewBindings.findChildViewById(rootView, id);
+      if (btnBlockAll == null) {
+        break missingId;
+      }
+
       id = R.id.chipAll;
       Chip chipAll = ViewBindings.findChildViewById(rootView, id);
       if (chipAll == null) {
@@ -210,9 +233,10 @@ public final class FragmentAppDetailBinding implements ViewBinding {
         break missingId;
       }
 
-      return new FragmentAppDetailBinding((LinearLayout) rootView, chipAll, chipDeduplicate,
-          chipDomain, chipGroupMode, chipGroupSort, chipIp, chipSortDomain, chipSortIp,
-          chipSortTime, recyclerView, tabLayout, toolbar, tvAppName, tvEmpty, tvPackageName);
+      return new FragmentAppDetailBinding((LinearLayout) rootView, btnAllowAll, btnBlockAll,
+          chipAll, chipDeduplicate, chipDomain, chipGroupMode, chipGroupSort, chipIp,
+          chipSortDomain, chipSortIp, chipSortTime, recyclerView, tabLayout, toolbar, tvAppName,
+          tvEmpty, tvPackageName);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

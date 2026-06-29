@@ -24,6 +24,7 @@ import java.util.Locale
 class ConnectionAdapter(
     private val onBlock: ((ConnectionLog) -> Unit)? = null,
     private val onUnblock: ((ConnectionLog) -> Unit)? = null,
+    private val onItemClick: ((ConnectionLog) -> Unit)? = null,
     private var displayMode: String = "domain"
 ) : ListAdapter<ConnectionLog, ConnectionAdapter.ConnectionViewHolder>(ConnectionDiffCallback) {
 
@@ -112,6 +113,11 @@ class ConnectionAdapter(
                 } else {
                     onBlock?.invoke(log)
                 }
+            }
+
+            // 条目点击查看详情
+            binding.root.setOnClickListener {
+                onItemClick?.invoke(log)
             }
         }
     }

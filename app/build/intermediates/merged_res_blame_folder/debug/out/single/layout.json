@@ -24,8 +24,8 @@
         "source": "/Users/yuguosheng/.gradle/daemon/8.5/com.zhuogui.firewall.app-main-50:/layout/fragment_app_list.xml"
     },
     {
-        "merged": "com.zhuogui.firewall.app-mergeDebugResources-47:/layout/fragment_app_list.xml",
-        "source": "com.zhuogui.firewall.app-main-50:/layout/fragment_app_list.xml"
+        "merged": "com.zhuogui.firewall.app-mergeDebugResources-47:/layout/fragment_app_detail.xml",
+        "source": "com.zhuogui.firewall.app-main-50:/layout/fragment_app_detail.xml"
     },
     {
         "merged": "/Users/yuguosheng/.gradle/daemon/8.5/com.zhuogui.firewall.app-mergeDebugResources-47:/layout/fragment_connections.xml",

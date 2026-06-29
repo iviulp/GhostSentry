@@ -13,9 +13,11 @@ import com.zhuogui.firewall.data.entity.FirewallRule
 import com.zhuogui.firewall.databinding.FragmentAppDetailBinding
 import com.zhuogui.firewall.ui.MainViewModel
 import com.zhuogui.firewall.ui.adapter.ConnectionAdapter
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.net.InetAddress
 
@@ -92,13 +94,12 @@ class AppDetailFragment : Fragment() {
         adapter = ConnectionAdapter(
             onBlock = { log -> 
                 blockConnection(log)
-                // 实时切换到“已阻止”选项卡
-                binding.tabLayout.selectTab(binding.tabLayout.getTabAt(1))
             },
             onUnblock = { log -> 
                 unblockConnection(log)
-                // 实时切换到“已允许”选项卡
-                binding.tabLayout.selectTab(binding.tabLayout.getTabAt(0))
+            },
+            onItemClick = { log ->
+                showConnectionDetails(log)
             }
         )
 
@@ -115,6 +116,51 @@ class AppDetailFragment : Fragment() {
             _deduplicate.value = isChecked
         }
 
+        // 一键全部阻止
+        binding.btnBlockAll.setOnClickListener {
+            val list = adapter.currentList
+            if (list.isNotEmpty()) {
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle("提示")
+                    .setMessage("确定要阻止当前列表中显示的所有连接地址吗？")
+                    .setPositiveButton("确定") { _, _ ->
+                        list.forEach { log ->
+                            val target = when (currentMode) {
+                                "ip" -> log.destIp
+                                else -> log.destDomain ?: log.destIp
+                            }
+                            val type = if (currentMode == "ip" || log.destDomain == null) "ip" else "domain"
+                            val rule = FirewallRule(
+                                packageName = packageName,
+                                target = target,
+                                blocked = true,
+                                type = type
+                            )
+                            viewModel.addRule(rule)
+                        }
+                    }
+                    .setNegativeButton("取消", null)
+                    .show()
+            }
+        }
+
+        // 一键全部放行
+        binding.btnAllowAll.setOnClickListener {
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle("提示")
+                .setMessage("确定要放行该应用已阻止的所有连接地址吗？")
+                .setPositiveButton("确定") { _, _ ->
+                    viewLifecycleOwner.lifecycleScope.launch {
+                        val rules = viewModel.allRules.value.filter { it.packageName == packageName }
+                        rules.forEach { rule ->
+                            viewModel.deleteRule(rule)
+                        }
+                    }
+                }
+                .setNegativeButton("取消", null)
+                .show()
+        }
+
         // 监听选项卡切换
         binding.tabLayout.addOnTabSelectedListener(object : com.google.android.material.tabs.TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: com.google.android.material.tabs.TabLayout.Tab) {
@@ -128,13 +174,37 @@ class AppDetailFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             combine(
                 viewModel.getConnectionsForPackage(packageName),
+                viewModel.allRules,
                 _displayMode,
                 _deduplicate,
                 _sortMode,
                 _activeTab
-            ) { logs, mode, dedup, sort, activeTab ->
+            ) { array ->
+                @Suppress("UNCHECKED_CAST")
+                val logs = array[0] as List<ConnectionLog>
+                @Suppress("UNCHECKED_CAST")
+                val rules = array[1] as List<FirewallRule>
+                val mode = array[2] as String
+                val dedup = array[3] as Boolean
+                val sort = array[4] as String
+                val activeTab = array[5] as Int
+
+                // 根据规则更新每个 log 的状态
+                val mappedLogs = logs.map { log ->
+                    val ruleBlocked = rules.any { rule ->
+                        (rule.packageName == log.packageName || rule.packageName == "*") &&
+                                rule.blocked &&
+                                (rule.target == log.destIp || (log.destDomain != null && rule.target == log.destDomain))
+                    }
+                    if (ruleBlocked) {
+                        log.copy(blocked = true, status = "BLOCKED")
+                    } else {
+                        log.copy(blocked = false, status = if (log.status == "BLOCKED") "SUCCESS" else log.status)
+                    }
+                }
+
                 // 根据选项卡过滤数据：0为已允许/失败/超时，1为被阻止(BLOCKED)
-                val filteredByTab = logs.filter { 
+                val filteredByTab = mappedLogs.filter { 
                     if (activeTab == 1) {
                         it.blocked || it.status == "BLOCKED"
                     } else {
@@ -143,7 +213,12 @@ class AppDetailFragment : Fragment() {
                 }
 
                 val processed = if (dedup) {
-                    filteredByTab.distinctBy { it.destDomain ?: it.destIp }
+                    filteredByTab.distinctBy { 
+                        when (mode) {
+                            "ip" -> it.destIp
+                            else -> it.destDomain ?: it.destIp
+                        }
+                    }
                 } else {
                     filteredByTab
                 }
@@ -154,6 +229,64 @@ class AppDetailFragment : Fragment() {
                 adapter.submitList(sorted)
                 updateEmptyState(sorted)
             }
+        }
+    }
+
+    /**
+     * 显示详细连接对话框
+     */
+    private fun showConnectionDetails(log: ConnectionLog) {
+        val target = when (currentMode) {
+            "ip" -> log.destIp
+            else -> log.destDomain ?: log.destIp
+        }
+        
+        viewLifecycleOwner.lifecycleScope.launch {
+            // 获取最新连接记录
+            val allLogs = viewModel.getConnectionsForPackage(packageName).first()
+            val matchedLogs = allLogs.filter { 
+                if (currentMode == "ip") {
+                    it.destIp == target
+                } else {
+                    (it.destDomain ?: it.destIp) == target
+                }
+            }
+
+            val sb = java.lang.StringBuilder()
+            val df = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault())
+
+            matchedLogs.forEachIndexed { index, item ->
+                sb.append("${index + 1}. [${df.format(java.util.Date(item.timestamp))}] ")
+                sb.append("${item.protocol} | ")
+                sb.append("端口: ${item.destPort} | ")
+
+                val isItemBlocked = viewModel.allRules.value.any { rule ->
+                    (rule.packageName == item.packageName || rule.packageName == "*") &&
+                            rule.blocked &&
+                            (rule.target == item.destIp || (item.destDomain != null && rule.target == item.destDomain))
+                }
+
+                if (isItemBlocked || item.status == "BLOCKED") {
+                    sb.append("状态: 已拦截\n")
+                } else {
+                    sb.append("状态: ${item.status}\n")
+                }
+                sb.append("   IP: ${item.destIp}:${item.destPort}")
+                if (item.destDomain != null) {
+                    sb.append(" (域名: ${item.destDomain})")
+                }
+                sb.append("\n\n")
+            }
+
+            if (sb.isEmpty()) {
+                sb.append("暂无详细连接记录")
+            }
+
+            com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext())
+                .setTitle("连接详情 (${if (currentMode == "ip") "IP" else "域名"}): $target")
+                .setMessage(sb.toString().trim())
+                .setPositiveButton("确定", null)
+                .show()
         }
     }
 
@@ -234,8 +367,11 @@ class AppDetailFragment : Fragment() {
      * 阻止连接：创建 FirewallRule
      */
     private fun blockConnection(log: ConnectionLog) {
-        val target = log.destDomain ?: log.destIp
-        val type = if (log.destDomain != null) "domain" else "ip"
+        val target = when (currentMode) {
+            "ip" -> log.destIp
+            else -> log.destDomain ?: log.destIp
+        }
+        val type = if (currentMode == "ip" || log.destDomain == null) "ip" else "domain"
         val rule = FirewallRule(
             packageName = packageName,
             target = target,
@@ -249,7 +385,10 @@ class AppDetailFragment : Fragment() {
      * 放开连接：删除对应的 FirewallRule
      */
     private fun unblockConnection(log: ConnectionLog) {
-        val target = log.destDomain ?: log.destIp
+        val target = when (currentMode) {
+            "ip" -> log.destIp
+            else -> log.destDomain ?: log.destIp
+        }
         viewModel.deleteRuleByTarget(packageName, target)
     }
 
